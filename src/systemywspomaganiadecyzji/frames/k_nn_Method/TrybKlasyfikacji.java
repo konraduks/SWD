@@ -8,6 +8,7 @@ package systemywspomaganiadecyzji.frames.k_nn_Method;
 import Data.Data;
 import Data.k_nn_method;
 import java.util.ArrayList;
+import javax.swing.JFrame;
 
 /**
  *
@@ -20,6 +21,7 @@ public class TrybKlasyfikacji extends javax.swing.JFrame {
      */
     public TrybKlasyfikacji() {
         initComponents();
+        setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
         fillComboBox();
     }
 
@@ -53,9 +55,11 @@ public class TrybKlasyfikacji extends javax.swing.JFrame {
             }
         });
 
-        jTextField1.setText("jTextField1");
-
-        jTextField2.setText("jTextField1");
+        jTextField1.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                jTextField1ActionPerformed(evt);
+            }
+        });
 
         jLabel2.setText("liczba sąsiadów:");
 
@@ -72,9 +76,9 @@ public class TrybKlasyfikacji extends javax.swing.JFrame {
                     .addGroup(layout.createSequentialGroup()
                         .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                             .addGroup(layout.createSequentialGroup()
-                                .addComponent(jTextField1, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                                .addComponent(jTextField1, javax.swing.GroupLayout.PREFERRED_SIZE, 40, javax.swing.GroupLayout.PREFERRED_SIZE)
                                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                                .addComponent(jTextField2, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
+                                .addComponent(jTextField2, javax.swing.GroupLayout.PREFERRED_SIZE, 42, javax.swing.GroupLayout.PREFERRED_SIZE))
                             .addGroup(layout.createSequentialGroup()
                                 .addComponent(jLabel1)
                                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
@@ -109,11 +113,16 @@ public class TrybKlasyfikacji extends javax.swing.JFrame {
 
     private void jButton1ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton1ActionPerformed
        k_nn_method knn = new k_nn_method();
-       double[] d = {4,5};
-        System.out.println(jComboBox1.getSelectedIndex() + ", " + neighbourCountTextField.getText() + ", " + Integer.parseInt(neighbourCountTextField.getText()));
+       //double[] d = {4,5};
+       double[] d = {Double.parseDouble(jTextField1.getText()),Double.parseDouble(jTextField2.getText())};
+        //System.out.println(jComboBox1.getSelectedIndex() + ", " + neighbourCountTextField.getText() + ", " + Integer.parseInt(neighbourCountTextField.getText()));
        knn.classificationMode(Data.getInstance().getAllData(), jComboBox1.getSelectedIndex(), d, Integer.parseInt(neighbourCountTextField.getText()));
        this.dispose();
     }//GEN-LAST:event_jButton1ActionPerformed
+
+    private void jTextField1ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jTextField1ActionPerformed
+        // TODO add your handling code here:
+    }//GEN-LAST:event_jTextField1ActionPerformed
 
     /**
      * @param args the command line arguments

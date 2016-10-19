@@ -24,6 +24,6 @@ public class mainik {
             public void run() {
                 new systemywspomaganiadecyzji.Window().setVisible(true);
             }
-        });
+        });      
     }
 }

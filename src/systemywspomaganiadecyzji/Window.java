@@ -27,6 +27,7 @@ import systemywspomaganiadecyzji.frames.P2D;
 import systemywspomaganiadecyzji.frames.P3D;
 import systemywspomaganiadecyzji.frames.Sortowanie;
 import systemywspomaganiadecyzji.frames.k_nn_Method.TrybKlasyfikacji;
+import systemywspomaganiadecyzji.frames.k_nn_Method.TrybOceny;
 
 /**
  *
@@ -227,6 +228,11 @@ public class Window extends javax.swing.JFrame {
         jMenu7.add(jMenuItem11);
 
         jMenuItem12.setText("tryb oceny");
+        jMenuItem12.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                jMenuItem12ActionPerformed(evt);
+            }
+        });
         jMenu7.add(jMenuItem12);
 
         jMenu6.add(jMenu7);
@@ -291,7 +297,7 @@ public class Window extends javax.swing.JFrame {
     }//GEN-LAST:event_jMenuItem5ActionPerformed
 
     private void jMenuItem7ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jMenuItem7ActionPerformed
-        new Dyskretyzacja().setVisible(true);
+        new Dyskretyzacja(this).setVisible(true);
     }//GEN-LAST:event_jMenuItem7ActionPerformed
 
     private void jMenuItem8ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jMenuItem8ActionPerformed
@@ -305,6 +311,10 @@ public class Window extends javax.swing.JFrame {
     private void jMenuItem11ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jMenuItem11ActionPerformed
         new TrybKlasyfikacji().setVisible(true);
     }//GEN-LAST:event_jMenuItem11ActionPerformed
+
+    private void jMenuItem12ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jMenuItem12ActionPerformed
+        new TrybOceny().setVisible(true);
+    }//GEN-LAST:event_jMenuItem12ActionPerformed
 
     public void fillData() {
         Data data = Data.getInstance();

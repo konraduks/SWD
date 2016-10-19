@@ -42,6 +42,10 @@ public class Data {
     public ArrayList<String> getHeaders() {
         return headers;
     }
+    
+    public String getHeader(int pos) {
+        return headers.get(pos);
+    }
 
     public void newRow() {
         allData.add(Row);
@@ -81,6 +85,13 @@ public class Data {
         System.out.println("po dodaniu: ");
         for(ArrayList<String> temp : allData){
             System.out.println(temp.toString());            
+        }
+    }
+    
+    public void setColumn(String[] data, int index){
+        for(int i = 0; i < allData.size(); i++){
+            ArrayList<String> temp = allData.get(i);
+            temp.set(index, data[i]);
         }
     }
 

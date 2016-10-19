@@ -96,8 +96,9 @@ public class Normalizacja extends javax.swing.JFrame {
             for(int i = 1; i <= Data.getInstance().getMaxWidth(); i++){
                 Data.getInstance().addHeader(i + "");
             }
-        }
-        Data.getInstance().addHeader("normalizacja");
+        }else{
+            Data.getInstance().addHeader("normalizacja");
+        }        
         DataOperation dao = new DataOperation();
         double[] res = dao.normalizacjaZmiennych(Data.getInstance().getColumn(jComboBox1.getSelectedIndex()));
         String[] s = new String[res.length];
@@ -156,7 +157,7 @@ public class Normalizacja extends javax.swing.JFrame {
         ArrayList<String> headers = Data.getInstance().getHeaders();
         jComboBox1.removeAllItems();
         if (headers.isEmpty()) {
-            System.out.println("PUSTO");
+            //System.out.println("PUSTO");
             int lp = Data.getInstance().getMaxWidth();
             for (int i = 1; i <= lp; i++) {
                 jComboBox1.addItem(i + " ");

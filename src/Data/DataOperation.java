@@ -5,14 +5,17 @@
  */
 package Data;
 
+import java.lang.reflect.Array;
+import java.util.Arrays;
+
 /**
  *
  * @author KonradD
  */
 public class DataOperation {
-    
-    public DataOperation(){
-        
+
+    public DataOperation() {
+
     }
 
     private int ilosc;
@@ -45,5 +48,36 @@ public class DataOperation {
         }
         sum /= ilosc;
         return Math.sqrt(sum);
+    }
+    
+    
+    //1. srednia
+    public double Wariancja(double[] tab){
+        double s = 0;
+        double srednia = srednia(tab);
+        for(int i = 0; i < tab.length; i++){
+            s += Math.pow(tab[i] - srednia, 2);
+        }
+        return s/tab.length;
+    }
+    
+    
+
+    public String[] dyskretyzacja(double[] tab, int rangeNumbers) {
+        double[] temp = Arrays.copyOf(tab, tab.length);
+        String[] res = new String[tab.length];
+        Arrays.sort(temp);
+        System.out.println(temp[0] + " " + temp[temp.length - 1]);
+        double val = temp[temp.length - 1] - temp[0];
+        double rangeValue = val / rangeNumbers;
+        System.out.println(val + " " + rangeValue);
+        double min = temp[0];
+        System.out.println(Arrays.toString(tab));
+        for (int i = 0; i < tab.length; i++) {
+            int tV = (int) ((tab[i] - min) / rangeValue);
+            res[i] = tV + 1 + "";
+        }
+        //System.out.println(Arrays.toString(temp));
+        return res;
     }
 }
