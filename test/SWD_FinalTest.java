@@ -6,6 +6,7 @@
 
 import Data.DataOperation;
 import Data.k_nn_method;
+import java.util.Arrays;
 import org.junit.After;
 import org.junit.AfterClass;
 import org.junit.Before;
@@ -101,6 +102,33 @@ public class SWD_FinalTest {
             4.1000};
         //assertEquals(2, dop.Wariancja(tab2), 0.1);
         k_nn_method knn = new k_nn_method();
-        knn.covarianceMatrix();
+        //knn.covarianceMatrix();
+    }
+
+    @Test
+    public void inverseArray() {
+        /*double[][] tab = {
+            {4.0000, 2, 0.6000},
+            {4.2000, 2.1, 0.5900},
+            {3.9000, 2, 0.5800},
+            {4.3000, 2.1, 0.6200},
+            {4.1000, 2.2, 0.6300}};
+        k_nn_method knn = new k_nn_method();
+        double[][] tab1 = knn.reverseArray(tab);
+        System.out.println("inwersja: ");
+        for(int i = 0; i < tab1.length; i++){
+            System.out.println(Arrays.toString(tab1[i]));
+        }*/
+        double[][] tab = {
+            {0.0250, 0.0075, 0.0017},
+            {0.0075, 0.0070, 0.0014},
+            {0.0017, 0.0014, 0.0004}
+        };
+        k_nn_method knn = new k_nn_method();
+        /*tab =*/ knn.inverseArray(tab);
+        System.out.println("inwersja: ");
+        for(int i = 0; i < tab.length; i++){
+            System.out.println(Arrays.toString(tab[i]));
+        }
     }
 }

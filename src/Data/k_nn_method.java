@@ -20,72 +20,41 @@ public class k_nn_method {
 
     private ArrayList<String> possibleResults = new ArrayList<>();
     private double[] pointPos;
+    
+    private Macierz inverseCovarianceMatrix;
 
     public k_nn_method() {
 
     }
 
-    public void classificationMode(ArrayList<ArrayList<String>> data, int decisionCol, double[] pointPos, int neighbourCount) {
+    //tryb klasyfikacji
+    public void classificationMode(int metric, ArrayList<ArrayList<String>> data, int decisionCol, double[] pointPos, int neighbourCount) {
         this.pointPos = pointPos;
-        /*for (int i = 0; i < data.size(); i++) {
-            System.out.println(i);
-        }*/
- /*for (int i = 0; i < 100; i++) {
-            if ((i % 2) == 0) {
-                continue;
-            }
-            System.out.println(i);
-        }*/
-        ArrayList<Structure> tempRes = distanceList(0, data, decisionCol);
-        /* ArrayList<String> row;
-        //ArrayList<String> possibleResults = new ArrayList<>();
-        double[] tempPoint = new double[data.size() - 1];
-        //ArrayList<Double> tempPoint = new ArrayList<>();
-        //for(ArrayList<String> row : data){
-        for (int j = 0; j < data.size(); j++) {
-            row = data.get(j);
-            for (int i = 0, iterator = 0; i < row.size(); i++) {
-                if (i == decisionCol) {
-                    if (!possibleResults.contains(row.get(i))) {
-                        possibleResults.add(row.get(i));
+        if (metric == 3) { //czyli mahalanobis
+            double[][] dataCov = new double[data.size()][data.get(0).size() - 1];
+            for (int i = 0; i < dataCov.length; i++) {
+                for (int j = 0, y = 0; j < data.get(0).size(); j++) {
+                    if (j == decisionCol) {
+                        continue;
                     }
-                    continue;
+                    dataCov[i][y++] = Double.parseDouble(data.get(i).get(j).replace(",", "."));
                 }
-                tempPoint[iterator++] = Double.parseDouble(row.get(i).replace(",", "."));
             }
-            //tempRes.add(new Structure(j, euclideanDistance(pointPos, tempPoint)));
-            tempRes.add(new Structure(j, euclideanDistance(pointPos, tempPoint), row.get(decisionCol)));
-            Arrays.fill(tempPoint, 0.0);
-        }*/
- /*for (Structure str : tempRes) {
-            System.out.println(str.getValue() + " ");
-        }*/
-
-        tempRes = sort(tempRes);
-        /*System.out.println("");
-        System.out.println("po sortowaniu");
-        for (Structure str : tempRes) {
-            System.out.println(str.getPosition() + " " +str.getValue() + " ");
+            /*for (int i = 0; i < dataCov.length; i++) {
+                System.err.println(Arrays.toString(dataCov[i]));
+            }*/
+            inverseArray(covarianceMatrix(dataCov));
         }
-        
-        System.out.println("possible");
-        for (String str : possibleResults) {
-            System.out.println(str);
-        }*/
-        //String[][] closestNeighbours = new String[neighbourCount][data.size()];
-        //String[]
-        /*for(int i = 0; i < neighbourCount; i++){
-            //closestNeighbours[i] = Array.
-            System.out.println(tempRes.get(i).toString());
-        }*/
-
+        ArrayList<Structure> tempRes = distanceList(metric, data, decisionCol);
+        tempRes = sort(tempRes);
         findResolution(tempRes.subList(0, neighbourCount)/*, decisionCol, possibleResults*/);
     }
 
-    private ArrayList<Structure> distanceList(int Distance, ArrayList<ArrayList<String>> data, int decisionCol) {
+    private ArrayList<Structure> distanceList(int metric, ArrayList<ArrayList<String>> data, int decisionCol) {
         ArrayList<Structure> tempRes = new ArrayList<>(); //przechowywane obliczone odleglosci
         ArrayList<String> row;
-        double[] tempPoint = new double[data.size() - 1];
+        //double[] tempPoint = new double[data.size() - 1];
+        double[] tempPoint = new double[data.get(0).size() - 1];
         for (int j = 0; j < data.size(); j++) {
             row = data.get(j);
             for (int i = 0, iterator = 0; i < row.size(); i++) {
@@ -97,35 +66,23 @@ public class k_nn_method {
                 }
                 tempPoint[iterator++] = Double.parseDouble(row.get(i).replace(",", "."));
             }
-            tempRes.add(new Structure(j, euclideanDistance(pointPos, tempPoint), row.get(decisionCol)));
+            //tempRes.add(new Structure(j, euclideanDistance(pointPos, tempPoint), row.get(decisionCol)));
+            if(metric == 0){
+                tempRes.add(new Structure(j, euclideanDistance(pointPos, tempPoint), row.get(decisionCol)));
+            }else if(metric == 1){
+                tempRes.add(new Structure(j, ManhattanDistance(pointPos, tempPoint), row.get(decisionCol)));
+            }else if(metric == 2){
+                tempRes.add(new Structure(j, maxDistance(pointPos, tempPoint), row.get(decisionCol)));
+            }else if(metric == 3){
+                tempRes.add(new Structure(j, mahalanobisDistance(pointPos, tempPoint), row.get(decisionCol)));
+            }
             Arrays.fill(tempPoint, 0.0);
         }
         return tempRes;
     }
 
-    private int findResolution(List<Structure> data/*, int decisionCol, ArrayList<String> possibleResults*/) {
-        /*boolean maxDuplicate = false;
-        int resultPos = -1;
-        int result = 0;*/
+    private int findResolution(List<Structure> data/*, int decisionCol, ArrayList<String> possibleResults*/) {        
         int[] results = new int[possibleResults.size()];
-
-        /*for (int tempRes : results) {
-            if (tempRes == result) {
-                maxDuplicate = true;
-            } else if (tempRes > result) {
-                result = tempRes;
-                maxDuplicate = false;
-            }
-        }*/
- /*for (int i = 0; i < possibleResults.size(); i++) {
-            if (results[i] == result) {
-                maxDuplicate = true;
-                System.out.println(i);
-            } else if (results[i] > result) {
-                result = results[i];
-                maxDuplicate = false;
-            }
-        }*/
         int resultPos;
         while (true) {
             boolean maxDuplicate = false;
@@ -164,7 +121,8 @@ public class k_nn_method {
         return resultPos;
     }
 
-    public void classificationEval(ArrayList<ArrayList<String>> data, int decisionCol, int neighbourCount) {
+    //tryb oceny
+    public void classificationEval(int metric, ArrayList<ArrayList<String>> data, int decisionCol, int neighbourCount) {
 
         ArrayList<Boolean> result = new ArrayList<>();
         ArrayList<Structure> tempRes;
@@ -218,6 +176,26 @@ public class k_nn_method {
         return res;
     }
 
+    public double[][] reverseArray(double[][] array) {
+        for (int j = 0; j < array.length; j++) {
+            for (int i = 0; i < array[j].length / 2; i++) {
+                double temp = array[j][i];
+                array[j][i] = array[j][array[j].length - i - 1];
+                array[j][array[j].length - i - 1] = temp;
+            }
+        }
+        return array;
+    }
+    
+    public /*double[][]*/ void inverseArray(double[][] array) {
+        Macierz mac = new Macierz(array);
+        //mac = mac.wyznaczMacierzOdwrotna();
+        inverseCovarianceMatrix = mac.wyznaczMacierzOdwrotna();
+        //System.out.println("macierz odwrotna:");
+        //System.out.println(mac.toString());
+        //return mac.getTablice();
+    }
+
     public double ManhattanDistance(double[] p1, double[] p2) {
         double res = 0;
         for (int i = 0; i < p1.length; i++) {
@@ -237,9 +215,21 @@ public class k_nn_method {
         //System.out.println(Arrays.toString(res));
         return res[p1.length - 1];
     }
-    
-    public double mahalanobisDistance(){
-        return 0;
+
+    public double mahalanobisDistance(double[] p1, double[] p2) {
+        double[][] t1 = {p1};
+        double[][] t2 = {p2};
+        Macierz mc1 = new Macierz(t1);
+        Macierz mc2 = new Macierz(t2);
+        /*System.err.println(mc1.toString());
+        System.err.println(mc2.toString());*/
+        /*Macierz temp =*/ mc2.odejmijMacierz(mc1);
+        Macierz temp = new Macierz(mc2.getTablice());
+        temp.pomnoz(inverseCovarianceMatrix);
+        mc2.transponuj();
+        temp.pomnoz(mc2);
+        //System.out.println("Wynik: " + temp.toString());
+        return Math.sqrt(temp.getTablice()[0][0]);
     }
 
     public ArrayList<Structure> sort(ArrayList<Structure> tempRes) {
@@ -258,13 +248,16 @@ public class k_nn_method {
         return tempRes;
     }
 
-    public void covarianceMatrix() {
-        double[][] tab = {
+    
+
+    public double[][] covarianceMatrix(double[][] tab) {
+        double[][] covarianceMatrix;
+        /*double[][] tab = {
             {4.0000, 2, 0.6000},
             {4.2000, 2.1, 0.5900},
             {3.9000, 2, 0.5800},
             {4.3000, 2.1, 0.6200},
-            {4.1000, 2.2, 0.6300}};
+            {4.1000, 2.2, 0.6300}};*/
         double[][] res = new double[tab[0].length][tab[0].length];
         double[] average = new double[tab[0].length];
         double[][] tab1 = new double[tab[0].length][];
@@ -291,17 +284,18 @@ public class k_nn_method {
         /*for (int i = 0; i < tab[0].length; i++) {
             //System.out.println(String.format("%.0f", Arrays.toString(res[i])));
             System.out.println(Arrays.toString(res[i]));
-        }
-        System.out.println("");
+        }*/
+        System.out.println("---------------------");
+        System.out.println("cov:");
         for (int i = 0; i < tab[0].length; i++) {
             for (int j = 0; j < tab[0].length; j++) {
                 System.out.print(String.format("%.5f", res[i][j]) + " ");
             }
             System.out.println("");
-        }*/
-
-        double[] point = {2, 4, 2};
-        
+        }
+        System.out.println("---------------------");
+        //covarianceMatrix = res;
+        return res;
     }
 
     private double convarianceMatrixEngine(double[] tabX, double[] tabY, double averageX, double averageY) {

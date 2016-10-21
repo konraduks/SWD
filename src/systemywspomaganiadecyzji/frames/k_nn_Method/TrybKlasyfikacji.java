@@ -41,6 +41,8 @@ public class TrybKlasyfikacji extends javax.swing.JFrame {
         jTextField2 = new javax.swing.JTextField();
         jLabel2 = new javax.swing.JLabel();
         neighbourCountTextField = new javax.swing.JTextField();
+        jLabel3 = new javax.swing.JLabel();
+        jComboBox2 = new javax.swing.JComboBox<>();
 
         setDefaultCloseOperation(javax.swing.WindowConstants.EXIT_ON_CLOSE);
 
@@ -63,6 +65,10 @@ public class TrybKlasyfikacji extends javax.swing.JFrame {
 
         jLabel2.setText("liczba sąsiadów:");
 
+        jLabel3.setText("metryka:");
+
+        jComboBox2.setModel(new javax.swing.DefaultComboBoxModel<>(new String[] { "Item 1", "Item 2", "Item 3", "Item 4" }));
+
         javax.swing.GroupLayout layout = new javax.swing.GroupLayout(getContentPane());
         getContentPane().setLayout(layout);
         layout.setHorizontalGroup(
@@ -76,17 +82,23 @@ public class TrybKlasyfikacji extends javax.swing.JFrame {
                     .addGroup(layout.createSequentialGroup()
                         .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                             .addGroup(layout.createSequentialGroup()
-                                .addComponent(jTextField1, javax.swing.GroupLayout.PREFERRED_SIZE, 40, javax.swing.GroupLayout.PREFERRED_SIZE)
-                                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                                .addComponent(jTextField2, javax.swing.GroupLayout.PREFERRED_SIZE, 42, javax.swing.GroupLayout.PREFERRED_SIZE))
-                            .addGroup(layout.createSequentialGroup()
                                 .addComponent(jLabel1)
                                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                                .addComponent(jComboBox1, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                                .addGap(89, 89, 89)
+                                .addComponent(jComboBox1, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
+                            .addGroup(layout.createSequentialGroup()
+                                .addComponent(jTextField1, javax.swing.GroupLayout.PREFERRED_SIZE, 40, javax.swing.GroupLayout.PREFERRED_SIZE)
+                                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                                .addComponent(jTextField2, javax.swing.GroupLayout.PREFERRED_SIZE, 42, javax.swing.GroupLayout.PREFERRED_SIZE)))
+                        .addGap(89, 89, 89)
+                        .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                            .addGroup(layout.createSequentialGroup()
                                 .addComponent(jLabel2)
                                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                                .addComponent(neighbourCountTextField, javax.swing.GroupLayout.PREFERRED_SIZE, 40, javax.swing.GroupLayout.PREFERRED_SIZE)))
+                                .addComponent(neighbourCountTextField, javax.swing.GroupLayout.PREFERRED_SIZE, 40, javax.swing.GroupLayout.PREFERRED_SIZE))
+                            .addGroup(layout.createSequentialGroup()
+                                .addComponent(jLabel3)
+                                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
+                                .addComponent(jComboBox2, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)))
                         .addGap(0, 32, Short.MAX_VALUE)))
                 .addContainerGap())
         );
@@ -102,7 +114,9 @@ public class TrybKlasyfikacji extends javax.swing.JFrame {
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
                 .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
                     .addComponent(jTextField1, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                    .addComponent(jTextField2, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
+                    .addComponent(jTextField2, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                    .addComponent(jLabel3)
+                    .addComponent(jComboBox2, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, 204, Short.MAX_VALUE)
                 .addComponent(jButton1)
                 .addContainerGap())
@@ -112,12 +126,12 @@ public class TrybKlasyfikacji extends javax.swing.JFrame {
     }// </editor-fold>//GEN-END:initComponents
 
     private void jButton1ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton1ActionPerformed
-       k_nn_method knn = new k_nn_method();
-       //double[] d = {4,5};
-       double[] d = {Double.parseDouble(jTextField1.getText()),Double.parseDouble(jTextField2.getText())};
+        k_nn_method knn = new k_nn_method();
+        //double[] d = {4,5};
+        double[] d = {Double.parseDouble(jTextField1.getText().replace(",", ".")), Double.parseDouble(jTextField2.getText().replace(",", "."))};
         //System.out.println(jComboBox1.getSelectedIndex() + ", " + neighbourCountTextField.getText() + ", " + Integer.parseInt(neighbourCountTextField.getText()));
-       knn.classificationMode(Data.getInstance().getAllData(), jComboBox1.getSelectedIndex(), d, Integer.parseInt(neighbourCountTextField.getText()));
-       this.dispose();
+        knn.classificationMode(jComboBox2.getSelectedIndex(), Data.getInstance().getAllData(), jComboBox1.getSelectedIndex(), d, Integer.parseInt(neighbourCountTextField.getText()));
+        this.dispose();
     }//GEN-LAST:event_jButton1ActionPerformed
 
     private void jTextField1ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jTextField1ActionPerformed
@@ -165,26 +179,33 @@ public class TrybKlasyfikacji extends javax.swing.JFrame {
     // Variables declaration - do not modify//GEN-BEGIN:variables
     private javax.swing.JButton jButton1;
     private javax.swing.JComboBox<String> jComboBox1;
+    private javax.swing.JComboBox<String> jComboBox2;
     private javax.swing.JLabel jLabel1;
     private javax.swing.JLabel jLabel2;
+    private javax.swing.JLabel jLabel3;
     private javax.swing.JTextField jTextField1;
     private javax.swing.JTextField jTextField2;
     private javax.swing.JTextField neighbourCountTextField;
     // End of variables declaration//GEN-END:variables
 
+    private String[] metrics = {"Euklidesowa", "Manhattan", "Max", "Mahalanobisa"};
     private void fillComboBox() {
         ArrayList<String> headers = Data.getInstance().getHeaders();
-        jComboBox1.removeAllItems();        
-        if(headers.isEmpty()){
+        jComboBox1.removeAllItems();
+        jComboBox2.removeAllItems();        
+        if (headers.isEmpty()) {
             //System.out.println("PUSTO");
             int lp = Data.getInstance().getMaxWidth();
-            for(int i = 1; i <= lp; i++){
-                jComboBox1.addItem(i + " ");                
-            }           
-        }else{
-            for(String s: headers){
-                jComboBox1.addItem(s);                
+            for (int i = 1; i <= lp; i++) {
+                jComboBox1.addItem(i + " ");
             }
-        }       
+        } else {
+            for (String s : headers) {
+                jComboBox1.addItem(s);
+            }
+        }
+        for(String s : metrics){
+            jComboBox2.addItem(s);
+        }
     }
 }
