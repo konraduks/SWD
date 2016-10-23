@@ -11,6 +11,7 @@ import java.util.Arrays;
 import java.util.Collections;
 import java.util.Comparator;
 import java.util.List;
+import java.util.Locale;
 
 /**
  *
@@ -20,7 +21,7 @@ public class k_nn_method {
 
     private ArrayList<String> possibleResults = new ArrayList<>();
     private double[] pointPos;
-    
+
     private Macierz inverseCovarianceMatrix;
 
     public k_nn_method() {
@@ -30,6 +31,16 @@ public class k_nn_method {
     //tryb klasyfikacji
     public void classificationMode(int metric, ArrayList<ArrayList<String>> data, int decisionCol, double[] pointPos, int neighbourCount) {
         this.pointPos = pointPos;
+        System.out.println("metryka: " + metric);
+        ArrayList<Structure> tempRes = distanceList(metric, data, decisionCol);
+        tempRes = sort(tempRes);
+        findResolution(tempRes.subList(0, neighbourCount)/*, decisionCol, possibleResults*/);
+    }
+
+    private ArrayList<Structure> distanceList(int metric, ArrayList<ArrayList<String>> data, int decisionCol) {
+        ArrayList<Structure> tempRes = new ArrayList<>(); //przechowywane obliczone odleglosci
+        ArrayList<String> row;
+        System.out.println("metryka: " + metric);
         if (metric == 3) { //czyli mahalanobis
             double[][] dataCov = new double[data.size()][data.get(0).size() - 1];
             for (int i = 0; i < dataCov.length; i++) {
@@ -43,16 +54,20 @@ public class k_nn_method {
             /*for (int i = 0; i < dataCov.length; i++) {
                 System.err.println(Arrays.toString(dataCov[i]));
             }*/
+            System.out.println("Kowariancja");
             inverseArray(covarianceMatrix(dataCov));
-        }
-        ArrayList<Structure> tempRes = distanceList(metric, data, decisionCol);
-        tempRes = sort(tempRes);
-        findResolution(tempRes.subList(0, neighbourCount)/*, decisionCol, possibleResults*/);
-    }
 
-    private ArrayList<Structure> distanceList(int metric, ArrayList<ArrayList<String>> data, int decisionCol) {
-        ArrayList<Structure> tempRes = new ArrayList<>(); //przechowywane obliczone odleglosci
-        ArrayList<String> row;
+            /*double[][] tempInv = inverseCovarianceMatrix.getTablice();
+            System.out.println("---------------------");
+            System.out.println("Rev cov:");
+            for (int i = 0; i < tempInv.length; i++) {
+                for (int j = 0; j < tempInv[0].length; j++) {
+                    System.out.print(String.format("%.5f", tempInv[i][j]) + " ");
+                }
+                System.out.println("");
+            }
+            System.out.println("---------------------");*/
+        }
         //double[] tempPoint = new double[data.size() - 1];
         double[] tempPoint = new double[data.get(0).size() - 1];
         for (int j = 0; j < data.size(); j++) {
@@ -67,13 +82,13 @@ public class k_nn_method {
                 tempPoint[iterator++] = Double.parseDouble(row.get(i).replace(",", "."));
             }
             //tempRes.add(new Structure(j, euclideanDistance(pointPos, tempPoint), row.get(decisionCol)));
-            if(metric == 0){
+            if (metric == 0) {
                 tempRes.add(new Structure(j, euclideanDistance(pointPos, tempPoint), row.get(decisionCol)));
-            }else if(metric == 1){
+            } else if (metric == 1) {
                 tempRes.add(new Structure(j, ManhattanDistance(pointPos, tempPoint), row.get(decisionCol)));
-            }else if(metric == 2){
+            } else if (metric == 2) {
                 tempRes.add(new Structure(j, maxDistance(pointPos, tempPoint), row.get(decisionCol)));
-            }else if(metric == 3){
+            } else if (metric == 3) {
                 tempRes.add(new Structure(j, mahalanobisDistance(pointPos, tempPoint), row.get(decisionCol)));
             }
             Arrays.fill(tempPoint, 0.0);
@@ -81,7 +96,7 @@ public class k_nn_method {
         return tempRes;
     }
 
-    private int findResolution(List<Structure> data/*, int decisionCol, ArrayList<String> possibleResults*/) {        
+    private int findResolution(List<Structure> data/*, int decisionCol, ArrayList<String> possibleResults*/) {
         int[] results = new int[possibleResults.size()];
         int resultPos;
         while (true) {
@@ -113,10 +128,10 @@ public class k_nn_method {
                 System.out.println("po: " + data.size());
             }
         }
-
-        System.out.println("pozycja najwiekszej wartosci: " + resultPos);
+//pozycje
+        /*System.out.println("pozycja najwiekszej wartosci: " + resultPos);
         System.out.println(Arrays.toString(results));
-        System.out.println(possibleResults.toString());
+        System.out.println(possibleResults.toString());*/
         //System.out.println(possibleResults.get(resultPos));
         return resultPos;
     }
@@ -129,7 +144,7 @@ public class k_nn_method {
         int calculatedValue;
         for (int i = 0; i < data.size(); i++) {
             setPoint(data.get(i), decisionCol);
-            tempRes = distanceList(0, classificationSubArray(data, i), decisionCol);
+            tempRes = distanceList(metric, classificationSubArray(data, i), decisionCol);
             tempRes = sort(tempRes);
             calculatedValue = findResolution(tempRes.subList(0, neighbourCount)/*, decisionCol, possibleResults*/);
             if (calculatedValue == -1) {
@@ -140,11 +155,32 @@ public class k_nn_method {
                 result.add(Boolean.FALSE);
             }
         }
-
         //System.out.println(result);
         System.out.println("");
         for (boolean b : result) {
             System.out.println(b);
+        }
+    }
+
+    //automatyczny(od 1 sasiada do n-1) tryb oceny
+    public void automaticClassification(int metric, ArrayList<ArrayList<String>> data, int decisionCol) {
+        for (int neighbourCount = 1; neighbourCount < data.size(); neighbourCount++) {
+            ArrayList<Boolean> result = new ArrayList<>();
+            ArrayList<Structure> tempRes;
+            int calculatedValue;
+            for (int i = 0; i < data.size(); i++) {
+                setPoint(data.get(i), decisionCol);
+                tempRes = distanceList(metric, classificationSubArray(data, i), decisionCol);
+                tempRes = sort(tempRes);
+                calculatedValue = findResolution(tempRes.subList(0, neighbourCount)/*, decisionCol, possibleResults*/);
+                if (calculatedValue == -1) {
+                    result.add(Boolean.FALSE);
+                } else if (possibleResults.get(calculatedValue).equals(data.get(i).get(decisionCol))) {
+                    result.add(Boolean.TRUE);
+                } else {
+                    result.add(Boolean.FALSE);
+                }
+            }
         }
     }
 
@@ -186,7 +222,7 @@ public class k_nn_method {
         }
         return array;
     }
-    
+
     public /*double[][]*/ void inverseArray(double[][] array) {
         Macierz mac = new Macierz(array);
         //mac = mac.wyznaczMacierzOdwrotna();
@@ -223,7 +259,7 @@ public class k_nn_method {
         Macierz mc2 = new Macierz(t2);
         /*System.err.println(mc1.toString());
         System.err.println(mc2.toString());*/
-        /*Macierz temp =*/ mc2.odejmijMacierz(mc1);
+ /*Macierz temp =*/ mc2.odejmijMacierz(mc1);
         Macierz temp = new Macierz(mc2.getTablice());
         temp.pomnoz(inverseCovarianceMatrix);
         mc2.transponuj();
@@ -248,16 +284,8 @@ public class k_nn_method {
         return tempRes;
     }
 
-    
-
     public double[][] covarianceMatrix(double[][] tab) {
         double[][] covarianceMatrix;
-        /*double[][] tab = {
-            {4.0000, 2, 0.6000},
-            {4.2000, 2.1, 0.5900},
-            {3.9000, 2, 0.5800},
-            {4.3000, 2.1, 0.6200},
-            {4.1000, 2.2, 0.6300}};*/
         double[][] res = new double[tab[0].length][tab[0].length];
         double[] average = new double[tab[0].length];
         double[][] tab1 = new double[tab[0].length][];
@@ -276,59 +304,43 @@ public class k_nn_method {
         //System.out.println(Arrays.toString(average));
         for (int i = 0; i < tab[0].length; i++) {
             for (int j = 0; j < tab[0].length; j++) {
-                //res[i][j] = (tab.length - 1 ) *
                 res[i][j] = (1.0 / (tab.length - 1)) * convarianceMatrixEngine(tab1[i], tab1[j], average[i], average[j]);
                 //System.out.println("P: " + (1.0/(tab.length - 1)) * convarianceMatrixEngine(tab1[i], tab1[j], average[i], average[j]));
             }
         }
-        /*for (int i = 0; i < tab[0].length; i++) {
-            //System.out.println(String.format("%.0f", Arrays.toString(res[i])));
-            System.out.println(Arrays.toString(res[i]));
-        }*/
         System.out.println("---------------------");
         System.out.println("cov:");
+        System.out.print("[");
         for (int i = 0; i < tab[0].length; i++) {
             for (int j = 0; j < tab[0].length; j++) {
-                System.out.print(String.format("%.5f", res[i][j]) + " ");
+                //System.out.print(String.format("%.5f", res[i][j]) + ", ");
+                System.out.print(String.format(Locale.US, "%.5f", res[i][j]));
+                if (j != (tab[0].length - 1)) {
+                    System.out.print(", ");
+                }
             }
-            System.out.println("");
+            System.out.println(";");
         }
+        System.out.print("]");
         System.out.println("---------------------");
-        //covarianceMatrix = res;
         return res;
     }
 
     private double convarianceMatrixEngine(double[] tabX, double[] tabY, double averageX, double averageY) {
-        //double[] temp = new double[tabX.length];
-        BigDecimal X, Y;// - new BigDecimal();
+        BigDecimal X, Y;
         BigDecimal avgX = new BigDecimal(averageX);
         BigDecimal avgY = new BigDecimal(averageY);
-        //double res = 0;
         BigDecimal res = new BigDecimal("0");
         for (int i = 0; i < tabX.length; i++) {
             int lengthX = tabX.length;
             int lengthY = tabY.length;
-            X = new BigDecimal(tabX[i]);//.setScale(lengthX);
-            Y = new BigDecimal(tabY[i]);//.setScale(lengthY);
-            //System.out.println("XY: " + X.toString() + ", " + Y.toString());
+            X = new BigDecimal(tabX[i]);
+            Y = new BigDecimal(tabY[i]);
             X = X.subtract(avgX);
             Y = Y.subtract(avgY);
-            //System.out.println(X.multiply(Y).setScale(lengthX, BigDecimal.ROUND_HALF_UP));
-            //res = res.add(X.multiply(Y).setScale(lengthX, BigDecimal.ROUND_HALF_UP));
             res = res.add(X.multiply(Y).setScale(lengthX, BigDecimal.ROUND_HALF_UP));
-            //res += X.multiply(Y).doubleValue();
-            //System.out.println(res);
-            //temp[i] = (tabX[i] - averageX) * (tabY[i] - averageY);
-            //System.out.println((tabX[i] - averageX) * (tabY[i] - averageY));
-
-            //res += (tabX[i] - averageX) * (tabY[i] - averageY);
         }
-
-        /*for (int i = 0; i < tabX.length; i++) {
-            res += temp[i];
-        } */
-        //System.out.println(res);
-        System.out.println(res.toString());
+        //System.out.println(res.toString());
         return res.doubleValue();
     }
 

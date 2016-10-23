@@ -131,4 +131,35 @@ public class SWD_FinalTest {
             System.out.println(Arrays.toString(tab[i]));
         }
     }
+    
+    @Test
+    public void covMatrix(){
+        double[][] tab = {
+            {1,2,3},
+            {3,4,7},
+            {0,0,0}            
+        };
+        k_nn_method knn = new k_nn_method();
+        tab = knn.covarianceMatrix(tab);
+        System.out.println("covMatrix: ");
+        for(int i = 0; i < tab.length; i++){
+            System.out.println(Arrays.toString(tab[i]));
+        }
+    }
+    @Test
+    public void covMatrix2(){
+        double[][] tab = {
+            {1,3,0},
+            {2,4,0},
+            {3,7,0}            
+        };
+        k_nn_method knn = new k_nn_method();
+        tab = knn.covarianceMatrix(tab);
+        System.out.println("---------------------");
+        System.out.println("covMatrix2: ");
+        for(int i = 0; i < tab.length; i++){
+            System.out.println(Arrays.toString(tab[i]));
+        }
+        System.out.println("---------------------");
+    }
 }
