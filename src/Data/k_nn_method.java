@@ -40,7 +40,7 @@ public class k_nn_method {
     private ArrayList<Structure> distanceList(int metric, ArrayList<ArrayList<String>> data, int decisionCol) {
         ArrayList<Structure> tempRes = new ArrayList<>(); //przechowywane obliczone odleglosci
         ArrayList<String> row;
-        System.out.println("metryka: " + metric);
+        //System.out.println("metryka: " + metric);
         if (metric == 3) { //czyli mahalanobis
             double[][] dataCov = new double[data.size()][data.get(0).size() - 1];
             for (int i = 0; i < dataCov.length; i++) {
@@ -116,7 +116,7 @@ public class k_nn_method {
                     maxDuplicate = false;
                 }
             }
-            if (!maxDuplicate) {
+            /*if (!maxDuplicate) {
                 break;
             } else if (data.size() == 2) {
                 resultPos = -1;
@@ -126,6 +126,17 @@ public class k_nn_method {
                 data = data.subList(0, data.size() - 1);
                 Arrays.fill(results, 0);
                 System.out.println("po: " + data.size());
+            }*/
+            if (!maxDuplicate) {
+                break;
+           /* } else if (data.size() == 2) {
+                resultPos = -1;
+                break;*/
+            } else if (maxDuplicate) {
+                //System.out.println("przed: " + data.size());
+                data = data.subList(0, data.size() - 1);
+                Arrays.fill(results, 0);
+                //System.out.println("po: " + data.size());
             }
         }
 //pozycje
@@ -137,7 +148,7 @@ public class k_nn_method {
     }
 
     //tryb oceny
-    public void classificationEval(int metric, ArrayList<ArrayList<String>> data, int decisionCol, int neighbourCount) {
+    public void evaluationMode(int metric, ArrayList<ArrayList<String>> data, int decisionCol, int neighbourCount) {
 
         ArrayList<Boolean> result = new ArrayList<>();
         ArrayList<Structure> tempRes;
@@ -163,9 +174,12 @@ public class k_nn_method {
     }
 
     //automatyczny(od 1 sasiada do n-1) tryb oceny
-    public void automaticClassification(int metric, ArrayList<ArrayList<String>> data, int decisionCol) {
+    public void automaticEvaluation(int metric, ArrayList<ArrayList<String>> data, int decisionCol) {
+        int falseCount;
+        System.out.println(data.size());
         for (int neighbourCount = 1; neighbourCount < data.size(); neighbourCount++) {
-            ArrayList<Boolean> result = new ArrayList<>();
+            //ArrayList<Boolean> result = new ArrayList<>();
+            falseCount = 0;
             ArrayList<Structure> tempRes;
             int calculatedValue;
             for (int i = 0; i < data.size(); i++) {
@@ -173,14 +187,21 @@ public class k_nn_method {
                 tempRes = distanceList(metric, classificationSubArray(data, i), decisionCol);
                 tempRes = sort(tempRes);
                 calculatedValue = findResolution(tempRes.subList(0, neighbourCount)/*, decisionCol, possibleResults*/);
-                if (calculatedValue == -1) {
+                /*if (calculatedValue == -1) {
                     result.add(Boolean.FALSE);
                 } else if (possibleResults.get(calculatedValue).equals(data.get(i).get(decisionCol))) {
                     result.add(Boolean.TRUE);
                 } else {
                     result.add(Boolean.FALSE);
+                }*/
+                if (possibleResults.get(calculatedValue).equals(data.get(i).get(decisionCol))) {
+                    //result.add(Boolean.TRUE);
+                } else {
+                    //result.add(Boolean.FALSE);
+                    falseCount++;
                 }
             }
+            System.out.println("Ilosc zle zaklasyfikowanych: " + falseCount + ", dla neighbourCount = " + neighbourCount);
         }
     }
 
@@ -227,8 +248,10 @@ public class k_nn_method {
         Macierz mac = new Macierz(array);
         //mac = mac.wyznaczMacierzOdwrotna();
         inverseCovarianceMatrix = mac.wyznaczMacierzOdwrotna();
-        //System.out.println("macierz odwrotna:");
-        //System.out.println(mac.toString());
+        System.out.println("---------------------");
+        System.out.println("macierz odwrotna:");
+        System.out.println(mac.toString());
+        System.out.println("---------------------");
         //return mac.getTablice();
     }
 

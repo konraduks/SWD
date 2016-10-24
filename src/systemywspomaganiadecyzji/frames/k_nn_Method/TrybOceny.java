@@ -132,10 +132,11 @@ public class TrybOceny extends javax.swing.JFrame {
         System.out.println("zaznaczony element " + metric);
         if(!automaticNeigbourVal){
             //ilosc sasiadow podana przez uzytkownika
-            knn.classificationEval(metric, Data.getInstance().getAllData(), jComboBox1.getSelectedIndex(), Integer.parseInt(neighbourCountTextField.getText()));
+            knn.evaluationMode(metric, Data.getInstance().getAllData(), jComboBox1.getSelectedIndex(), Integer.parseInt(neighbourCountTextField.getText()));
         }else{
             //automatyczna ilosc sasiadow od 1 do n-1
-            throw new UnsupportedOperationException("Nie ma");
+            //throw new UnsupportedOperationException("Nie ma");
+            knn.automaticEvaluation(metric, Data.getInstance().getAllData(), jComboBox1.getSelectedIndex());
         }
         
     }//GEN-LAST:event_jButton1ActionPerformed
