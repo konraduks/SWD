@@ -21,6 +21,7 @@ public class TrybOceny extends javax.swing.JFrame {
      */
     
     private boolean automaticNeigbourVal = false;
+    private boolean deleteColWithEqualVal = false;
     
     public TrybOceny() {
         initComponents();
@@ -45,6 +46,7 @@ public class TrybOceny extends javax.swing.JFrame {
         jLabel3 = new javax.swing.JLabel();
         jComboBox2 = new javax.swing.JComboBox<>();
         jCheckBox1 = new javax.swing.JCheckBox();
+        jCheckBox2 = new javax.swing.JCheckBox();
 
         setDefaultCloseOperation(javax.swing.WindowConstants.EXIT_ON_CLOSE);
 
@@ -72,6 +74,13 @@ public class TrybOceny extends javax.swing.JFrame {
             }
         });
 
+        jCheckBox2.setText("usuwaj kolumny z jednakowymi wartościami");
+        jCheckBox2.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                jCheckBox2ActionPerformed(evt);
+            }
+        });
+
         javax.swing.GroupLayout layout = new javax.swing.GroupLayout(getContentPane());
         getContentPane().setLayout(layout);
         layout.setHorizontalGroup(
@@ -79,6 +88,9 @@ public class TrybOceny extends javax.swing.JFrame {
             .addGroup(javax.swing.GroupLayout.Alignment.LEADING, layout.createSequentialGroup()
                 .addContainerGap()
                 .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                    .addGroup(layout.createSequentialGroup()
+                        .addComponent(jCheckBox2)
+                        .addGap(0, 0, Short.MAX_VALUE))
                     .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, layout.createSequentialGroup()
                         .addGap(0, 0, Short.MAX_VALUE)
                         .addComponent(jButton1))
@@ -116,7 +128,9 @@ public class TrybOceny extends javax.swing.JFrame {
                     .addComponent(jLabel3)
                     .addComponent(jComboBox2, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
                     .addComponent(jCheckBox1))
-                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, 202, Short.MAX_VALUE)
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                .addComponent(jCheckBox2)
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, 179, Short.MAX_VALUE)
                 .addComponent(jButton1)
                 .addContainerGap())
         );
@@ -136,7 +150,7 @@ public class TrybOceny extends javax.swing.JFrame {
         }else{
             //automatyczna ilosc sasiadow od 1 do n-1
             //throw new UnsupportedOperationException("Nie ma");
-            knn.automaticEvaluation(metric, Data.getInstance().getAllData(), jComboBox1.getSelectedIndex());
+            knn.automaticEvaluation(metric, Data.getInstance().getAllData(), jComboBox1.getSelectedIndex(), deleteColWithEqualVal);
         }
         
     }//GEN-LAST:event_jButton1ActionPerformed
@@ -145,6 +159,10 @@ public class TrybOceny extends javax.swing.JFrame {
         neighbourCountTextField.setEditable(automaticNeigbourVal);
         automaticNeigbourVal = !automaticNeigbourVal;
     }//GEN-LAST:event_jCheckBox1ActionPerformed
+
+    private void jCheckBox2ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jCheckBox2ActionPerformed
+        deleteColWithEqualVal = !deleteColWithEqualVal;
+    }//GEN-LAST:event_jCheckBox2ActionPerformed
 
     /**
      * @param args the command line arguments
@@ -187,6 +205,7 @@ public class TrybOceny extends javax.swing.JFrame {
     // Variables declaration - do not modify//GEN-BEGIN:variables
     private javax.swing.JButton jButton1;
     private javax.swing.JCheckBox jCheckBox1;
+    private javax.swing.JCheckBox jCheckBox2;
     private javax.swing.JComboBox<String> jComboBox1;
     private javax.swing.JComboBox<String> jComboBox2;
     private javax.swing.JLabel jLabel1;

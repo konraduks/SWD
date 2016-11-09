@@ -6,6 +6,7 @@
 package Data;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 
 /**
  *
@@ -42,7 +43,7 @@ public class Data {
     public ArrayList<String> getHeaders() {
         return headers;
     }
-    
+
     public String getHeader(int pos) {
         return headers.get(pos);
     }
@@ -74,42 +75,76 @@ public class Data {
     public ArrayList<String> getRow(int number) {
         return allData.get(number);
     }
-    
-    public void addColumn(String[] tab){
+
+    public double[][] getData(final int[] column) {
+        //double[][] temp = new double[column.length][maxWidth];
+        //System.out.println(maxWidth + ", columnL: " + column.length);
+        double[][] temp = new double[allData.size()][column.length];
+
+        /*for(ArrayList<String> row : allData){
+            
+            res[pos] = Double.parseDouble(temp.get(index).replaceAll(",", "."));
+            pos++;
+        }*/
+        //allData.size() -> ile rzedow!!!
+        System.out.println("wilekosc allData: " + allData.size());
+        for (int col = 0, i = 0; col < maxWidth; col++) {
+            //if (Arrays.binarySearch(column, col) != -1) {
+            for (int check = 0; check < column.length; check++) { //sprawdzenie, czy dana kolumna jest w zbiorze column
+                if (column[check] == col) {
+                    for (int row = 0; row < allData.size(); row++) {
+                        //System.err.println(col + " ,row: " + row);
+                        temp[row][i] = Double.parseDouble(allData.get(row).get(col).replaceAll(",", "."));
+                    }
+                    i++;
+                    break;
+                }
+            }
+
+        }
+        
+        /*for(double[] dob: temp){
+            System.out.println(Arrays.toString(dob));
+        }*/
+
+        return temp;
+    }
+
+    public void addColumn(String[] tab) {
         int pos = 0;
-        for(ArrayList<String> temp : allData){
+        for (ArrayList<String> temp : allData) {
             System.out.println(temp.toString());
             temp.add(tab[pos]);
-            pos ++;
+            pos++;
         }
         System.out.println("po dodaniu: ");
-        for(ArrayList<String> temp : allData){
-            System.out.println(temp.toString());            
+        for (ArrayList<String> temp : allData) {
+            System.out.println(temp.toString());
         }
     }
-    
-    public void setColumn(String[] data, int index){
-        for(int i = 0; i < allData.size(); i++){
+
+    public void setColumn(String[] data, int index) {
+        for (int i = 0; i < allData.size(); i++) {
             ArrayList<String> temp = allData.get(i);
             temp.set(index, data[i]);
         }
     }
 
-    public double[] getColumn(int index){
+    public double[] getColumn(int index) {
         int pos = 0;
         double[] res = new double[allData.size()];
-        for(ArrayList<String> temp : allData){
-            
+        for (ArrayList<String> temp : allData) {
+
             res[pos] = Double.parseDouble(temp.get(index).replaceAll(",", "."));
             pos++;
         }
         return res;
     }
-    
-    public String[] getStringColumn(int index){
+
+    public String[] getStringColumn(int index) {
         int pos = 0;
         String[] res = new String[allData.size()];
-        for(ArrayList<String> temp : allData){
+        for (ArrayList<String> temp : allData) {
             res[pos] = temp.get(index);
             pos++;
         }
@@ -138,12 +173,12 @@ public class Data {
             String temp = allData.get(row).get(column);
             previousValue.add(new OldData(column, row, temp));
             allData.get(row).set(column, value);
-        }        
+        }
         print();
     }
-    
-    public String[] charToString(String[] temp){
-        for(int i = 0; i < temp.length; i++){
+
+    public String[] charToString(String[] temp) {
+        for (int i = 0; i < temp.length; i++) {
             temp[i] += "a";
         }
         System.err.println(" test: a" + temp[5] + "a");

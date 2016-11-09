@@ -26,6 +26,7 @@ import systemywspomaganiadecyzji.frames.Normalizacja;
 import systemywspomaganiadecyzji.frames.P2D;
 import systemywspomaganiadecyzji.frames.P3D;
 import systemywspomaganiadecyzji.frames.Sortowanie;
+import systemywspomaganiadecyzji.frames.k_means.grupowanieKMeans;
 import systemywspomaganiadecyzji.frames.k_nn_Method.TrybKlasyfikacji;
 import systemywspomaganiadecyzji.frames.k_nn_Method.TrybOceny;
 
@@ -87,6 +88,7 @@ public class Window extends javax.swing.JFrame {
         jMenu7 = new javax.swing.JMenu();
         jMenuItem11 = new javax.swing.JMenuItem();
         jMenuItem12 = new javax.swing.JMenuItem();
+        jMenuItem13 = new javax.swing.JMenuItem();
 
         jMenuItem10.setText("jMenuItem10");
 
@@ -237,6 +239,14 @@ public class Window extends javax.swing.JFrame {
 
         jMenu6.add(jMenu7);
 
+        jMenuItem13.setText("grupowanie (metoda k-sąsiadów)");
+        jMenuItem13.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                jMenuItem13ActionPerformed(evt);
+            }
+        });
+        jMenu6.add(jMenuItem13);
+
         jMenuBar1.add(jMenu6);
 
         setJMenuBar(jMenuBar1);
@@ -258,7 +268,7 @@ public class Window extends javax.swing.JFrame {
                 .addContainerGap())
         );
 
-        pack();
+        setBounds(0, 0, 416, 339);
     }// </editor-fold>//GEN-END:initComponents
 
     private void jMenuItem1ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jMenuItem1ActionPerformed
@@ -315,6 +325,10 @@ public class Window extends javax.swing.JFrame {
     private void jMenuItem12ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jMenuItem12ActionPerformed
         new TrybOceny().setVisible(true);
     }//GEN-LAST:event_jMenuItem12ActionPerformed
+
+    private void jMenuItem13ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jMenuItem13ActionPerformed
+        new grupowanieKMeans().setVisible(true);
+    }//GEN-LAST:event_jMenuItem13ActionPerformed
 
     public void fillData() {
         Data data = Data.getInstance();
@@ -428,6 +442,7 @@ public class Window extends javax.swing.JFrame {
     private javax.swing.JMenuItem jMenuItem10;
     private javax.swing.JMenuItem jMenuItem11;
     private javax.swing.JMenuItem jMenuItem12;
+    private javax.swing.JMenuItem jMenuItem13;
     private javax.swing.JMenuItem jMenuItem2;
     private javax.swing.JMenuItem jMenuItem3;
     private javax.swing.JMenuItem jMenuItem4;

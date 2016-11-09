@@ -5,6 +5,9 @@
  */
 package Data;
 
+import cern.colt.matrix.DoubleMatrix2D;
+import cern.colt.matrix.impl.DenseDoubleMatrix2D;
+import cern.colt.matrix.linalg.Algebra;
 import java.math.BigDecimal;
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -23,6 +26,7 @@ public class k_nn_method {
     private double[] pointPos;
 
     private Macierz inverseCovarianceMatrix;
+    private Macierz[] inversedCovarianceMatrix;
 
     public k_nn_method() {
 
@@ -54,7 +58,7 @@ public class k_nn_method {
             /*for (int i = 0; i < dataCov.length; i++) {
                 System.err.println(Arrays.toString(dataCov[i]));
             }*/
-            System.out.println("Kowariancja");
+            //System.out.println("Kowariancja");
             inverseArray(covarianceMatrix(dataCov));
 
             /*double[][] tempInv = inverseCovarianceMatrix.getTablice();
@@ -129,7 +133,7 @@ public class k_nn_method {
             }*/
             if (!maxDuplicate) {
                 break;
-           /* } else if (data.size() == 2) {
+                /* } else if (data.size() == 2) {
                 resultPos = -1;
                 break;*/
             } else if (maxDuplicate) {
@@ -173,8 +177,37 @@ public class k_nn_method {
         }
     }
 
+    ArrayList<Integer> nC = new ArrayList<>(); //liczba sasaidow wzietych do klasyfikacji
+    //ArrayList<Integer> fC = new ArrayList<>(); //liczba zle zaklasyfikowanych
+    ArrayList<Double> qualityClassification = new ArrayList<>();
+
     //automatyczny(od 1 sasiada do n-1) tryb oceny
-    public void automaticEvaluation(int metric, ArrayList<ArrayList<String>> data, int decisionCol) {
+    public void automaticEvaluation1(int metric, ArrayList<ArrayList<String>> data, int decisionCol, boolean deleteEqualValCol) {        
+        long startTime = System.currentTimeMillis();
+        if (deleteEqualValCol) {
+            data = deleteEqualCol(data);
+        }
+        if (metric == 3) { //czyli mahalanobis
+            System.out.println(data.get(0).size());
+            inversedCovarianceMatrix = new Macierz[data.size()];
+            for (int x = 0; x < data.size(); x++) {
+                double[][] dataCov = new double[data.size() - 1][data.get(0).size() - 1];
+                ArrayList<ArrayList<String>> dataToCovArr = classificationSubArray(data, x);//lista bez rzedu do oceny
+                for (int i = 4; i < dataCov.length; i++) {
+                    for (int j = 0, y = 0; j < data.get(0).size(); j++) {
+                        if (j == decisionCol) {
+                            continue;
+                        }
+                        //dataCov[i][y++] = Double.parseDouble(data.get(i).get(j).replace(",", "."));
+                        dataCov[i][y++] = Double.parseDouble(dataToCovArr.get(i).get(j).replace(",", "."));
+                    }
+                }
+                long start = System.currentTimeMillis();
+                inverseArray(covarianceMatrix(dataCov), x);
+                long stop = System.currentTimeMillis();
+                System.out.println("Czas odwracania: " + (stop - start));
+            }
+        }
         int falseCount;
         System.out.println(data.size());
         for (int neighbourCount = 1; neighbourCount < data.size(); neighbourCount++) {
@@ -184,7 +217,7 @@ public class k_nn_method {
             int calculatedValue;
             for (int i = 0; i < data.size(); i++) {
                 setPoint(data.get(i), decisionCol);
-                tempRes = distanceList(metric, classificationSubArray(data, i), decisionCol);
+                tempRes = automaticDistanceList(metric, classificationSubArray(data, i), decisionCol, i); //i to ktora tablice z inversedCovarianceMatrix wziac
                 tempRes = sort(tempRes);
                 calculatedValue = findResolution(tempRes.subList(0, neighbourCount)/*, decisionCol, possibleResults*/);
                 /*if (calculatedValue == -1) {
@@ -202,7 +235,203 @@ public class k_nn_method {
                 }
             }
             System.out.println("Ilosc zle zaklasyfikowanych: " + falseCount + ", dla neighbourCount = " + neighbourCount);
+            nC.add(neighbourCount);
+            //fC.add(falseCount);
+            double quality = ((data.size() - falseCount) / (data.size() * 1.0));
+            qualityClassification.add(quality);
         }
+        System.out.println(nC.toString());
+        //System.out.println(fC.toString());
+        System.out.println(qualityClassification.toString());
+        long stopTime = System.currentTimeMillis();
+        System.out.println("Laczny czas wykonania: " + ((stopTime - startTime) / 1000));
+    }
+
+    //automatyczny(od 1 sasiada do n-1) tryb oceny
+    public void automaticEvaluation(int metric, ArrayList<ArrayList<String>> data, int decisionCol, boolean deleteEqualValCol) {
+        long startTime = System.currentTimeMillis();
+        if (deleteEqualValCol) {
+            data = deleteEqualCol(data);
+        }
+        /*if (metric == 3) { //czyli mahalanobis
+            System.out.println(data.get(0).size());
+            inversedCovarianceMatrix = new Macierz[data.size()];
+            for (int x = 0; x < data.size(); x++) {
+                double[][] dataCov = new double[data.size() - 1][data.get(0).size() - 1];
+                ArrayList<ArrayList<String>> dataToCovArr = classificationSubArray(data, x);//lista bez rzedu do oceny
+                for (int i = 0; i < dataCov.length; i++) {
+                    for (int j = 0, y = 0; j < data.get(0).size(); j++) {
+                        if (j == decisionCol) {
+                            continue;
+                        }
+                        //dataCov[i][y++] = Double.parseDouble(data.get(i).get(j).replace(",", "."));
+                        dataCov[i][y++] = Double.parseDouble(dataToCovArr.get(i).get(j).replace(",", "."));
+                    }
+                }
+                /*System.out.println("------------------");
+                System.out.print("[");
+                for (int i = 0; i < dataCov.length; i++) {
+                    for (int j = 0; j < dataCov[i].length; j++) {
+                        //System.out.print(String.format("%.5f", res[i][j]) + ", ");
+                        System.out.print(dataCov[i][j]);
+                        if (j != (dataCov.length - 1)) {
+                            System.out.print(", ");
+                        }
+                    }
+                    System.out.println(";");
+                }
+                System.out.print("]");
+                System.out.println("------------------");*-/
+                long start = System.currentTimeMillis();
+                inverseArray(covarianceMatrix(dataCov), x);
+                long stop = System.currentTimeMillis();
+                System.out.println("Czas odwracania: " + (stop - start));
+            }
+        }*/
+        int falseCount;
+        System.out.println(data.size());
+
+        int[] result = new int[data.size() - 1];
+        //ArrayList<Boolean> result = new ArrayList<>();
+        falseCount = 0;
+        ArrayList<Structure> tempRes;
+        int calculatedValue;
+        for (int i = 0; i < data.size(); i++) {
+            if(metric == 3){
+                double[][] dataCov = new double[data.size() - 1][data.get(0).size() - 1];
+                ArrayList<ArrayList<String>> dataToCovArr = classificationSubArray(data, i);//lista bez rzedu do oceny
+                
+                for (int x = 0; x < dataCov.length; x++) {
+                    for (int j = 0, y = 0; j < data.get(0).size(); j++) {
+                        if (j == decisionCol) {
+                            continue;
+                        }
+                        //dataCov[i][y++] = Double.parseDouble(data.get(i).get(j).replace(",", "."));
+                        dataCov[x][y++] = Double.parseDouble(dataToCovArr.get(x).get(j).replace(",", "."));
+                    }
+                }
+                
+                //long start = System.currentTimeMillis();
+                inverseArray(covarianceMatrix(dataCov));
+                //long stop = System.currentTimeMillis();
+                //System.out.println("Czas odwracania: " + (stop - start));
+            }
+            setPoint(data.get(i), decisionCol);
+            tempRes = automaticDistanceList(metric, classificationSubArray(data, i), decisionCol, i); //i to ktora tablice z inversedCovarianceMatrix wziac
+            tempRes = sort(tempRes);
+            for (int neighbourCount = 1; neighbourCount < data.size(); neighbourCount++) {
+                calculatedValue = findResolution(tempRes.subList(0, neighbourCount)/*, decisionCol, possibleResults*/);
+                if (possibleResults.get(calculatedValue).equals(data.get(i).get(decisionCol))) {
+                    //result.add(Boolean.TRUE);
+                } else {
+                    //result.add(Boolean.FALSE);
+                    //falseCount++;
+                    result[neighbourCount - 1]++;
+                }
+            }
+            //System.out.println("Ilosc zle zaklasyfikowanych: " + falseCount + ", dla neighbourCount = " + neighbourCount);
+            //nC.add(neighbourCount);
+            //fC.add(falseCount);
+            /*double quality = ((data.size() - falseCount) / (data.size() * 1.0));
+            qualityClassification.add(quality);*/
+        }
+        System.out.print("[");
+        for (int i = 0; i < result.length; i++) {
+            qualityClassification.add(((data.size() - result[i]) / (data.size() * 1.0)));
+            if (i != result.length - 1) {
+                System.out.print((i + 1) + ", ");
+            } else {
+                System.out.print((i + 1));
+            }
+        }
+        System.out.println("]");
+        System.out.println(qualityClassification.toString());
+
+        //System.out.println(nC.toString());
+        //System.out.println(fC.toString());
+        //System.out.println(qualityClassification.toString());
+        System.out.println("Wynik automatic: " + Arrays.toString(result)); //zerowy indeks trzyma wynik dla k=1
+        long stopTime = System.currentTimeMillis();
+        System.out.println("Laczny czas wykonania(w s): " + ((stopTime - startTime) / 1000));
+        System.out.println("Laczny czas wykonania(w ms): " + ((stopTime - startTime)));
+    }
+
+    private ArrayList<Structure> automaticDistanceList(int metric, ArrayList<ArrayList<String>> data, int decisionCol, int inverseMatrixPos) {
+        ArrayList<Structure> tempRes = new ArrayList<>(); //przechowywane obliczone odleglosci
+        ArrayList<String> row;
+        //System.out.println("metryka: " + metric);        
+        //double[] tempPoint = new double[data.size() - 1];
+        double[] tempPoint = new double[data.get(0).size() - 1];
+        for (int j = 0; j < data.size(); j++) {
+            row = data.get(j);
+            for (int i = 0, iterator = 0; i < row.size(); i++) {
+                if (i == decisionCol) {
+                    if (!possibleResults.contains(row.get(i))) {
+                        possibleResults.add(row.get(i));
+                    }
+                    continue;
+                }
+                tempPoint[iterator++] = Double.parseDouble(row.get(i).replace(",", "."));
+            }
+            //tempRes.add(new Structure(j, euclideanDistance(pointPos, tempPoint), row.get(decisionCol)));
+            if (metric == 0) {
+                tempRes.add(new Structure(j, euclideanDistance(pointPos, tempPoint), row.get(decisionCol)));
+            } else if (metric == 1) {
+                tempRes.add(new Structure(j, ManhattanDistance(pointPos, tempPoint), row.get(decisionCol)));
+            } else if (metric == 2) {
+                tempRes.add(new Structure(j, maxDistance(pointPos, tempPoint), row.get(decisionCol)));
+            } else if (metric == 3) {
+                tempRes.add(new Structure(j, automaticMahalanobisDistance(pointPos, tempPoint, inverseMatrixPos), row.get(decisionCol)));
+            }
+            Arrays.fill(tempPoint, 0.0);
+        }
+        return tempRes;
+    }
+
+    private ArrayList<ArrayList<String>> deleteEqualCol(ArrayList<ArrayList<String>> data) {
+        ArrayList<ArrayList<String>> temp = new ArrayList<>();
+        String val = null;
+        ArrayList<Integer> colToRemove = new ArrayList<>();
+        //System.out.println("deleteEqual");
+        for (int i = 0, y = 0; /*i < data.size()*/ y < data.get(0).size(); i++) {
+            //System.out.print(data.get(i).get(y) + " ");
+            if (i == data.get(0).size() - 1) {
+                //System.out.println("kolumna z wartosciami do usuniecia " + y);
+                colToRemove.add(0, y);
+                y++;
+                i = -1;
+                //wartosci w kolumnie sa rowne, czyli do usuniecia                
+                continue;
+            }
+            if (i == 0) {
+                val = data.get(i).get(y);
+            } else if (!val.equals(data.get(i).get(y))) {
+                //wartosci w kolumnie sa rozne mozna przejsc do nastepnej
+                //System.out.println("");
+                y++;
+                i = -1;
+                //System.out.println("");
+            }
+            //for(int y = 0; y < data.size(); y++){
+            //data.get(0).get(0);
+            //data.get(1).get(0);
+            //}
+        }
+        //System.out.println("Do usuniecia: " + colToRemove.toString());
+        for (int i = 0; i < data.size(); i++) {
+            temp.add(new ArrayList<String>());
+            for (int j = 0; j < data.get(i).size(); j++) {
+                if (colToRemove.contains(j)) {
+                    continue;
+                }
+                temp.get(i).add(data.get(i).get(j));
+            }
+        }
+        /*System.out.println("PO CZYSZCZENIU");
+        for(ArrayList<String> stemp : temp){
+            System.out.println(stemp.toString());
+        }*/
+        return temp;
     }
 
     private void setPoint(ArrayList<String> data, int decisionCol) {
@@ -245,13 +474,40 @@ public class k_nn_method {
     }
 
     public /*double[][]*/ void inverseArray(double[][] array) {
-        Macierz mac = new Macierz(array);
-        //mac = mac.wyznaczMacierzOdwrotna();
-        inverseCovarianceMatrix = mac.wyznaczMacierzOdwrotna();
-        System.out.println("---------------------");
+        //Macierz mac = new Macierz(array);
+        //inverseCovarianceMatrix = mac.wyznaczMacierzOdwrotna();
+        
+        DoubleMatrix2D matrix = new DenseDoubleMatrix2D(array);
+        Algebra alg = new Algebra();
+        matrix = alg.inverse(matrix);
+        Macierz mac = new Macierz(matrix.toArray());
+        inverseCovarianceMatrix = mac;
+        
+        //mac = mac.wyznaczMacierzOdwrotna();        
+        /*System.out.println("---------------------");
         System.out.println("macierz odwrotna:");
         System.out.println(mac.toString());
-        System.out.println("---------------------");
+        System.out.println("---------------------");*/
+        //return mac.getTablice();
+        
+        
+        
+    }
+
+    public /*double[][]*/ void inverseArray(double[][] array, int pos) {
+        //Macierz mac = new Macierz(array);
+        //mac = mac.wyznaczMacierzOdwrotna();
+        //inverseCovarianceMatrix = mac.wyznaczMacierzOdwrotna();
+        //inversedCovarianceMatrix[pos] = mac.wyznaczMacierzOdwrotna();        
+        DoubleMatrix2D matrix = new DenseDoubleMatrix2D(array);
+        Algebra alg = new Algebra();
+        matrix = alg.inverse(matrix);
+        Macierz mac = new Macierz(matrix.toArray());
+        inversedCovarianceMatrix[pos] = mac;
+        /*System.out.println("---------------------");
+        System.out.println("macierz odwrotna:");
+        System.out.println(mac.toString());
+        System.out.println("---------------------");*/
         //return mac.getTablice();
     }
 
@@ -275,6 +531,7 @@ public class k_nn_method {
         return res[p1.length - 1];
     }
 
+    //point, data array
     public double mahalanobisDistance(double[] p1, double[] p2) {
         double[][] t1 = {p1};
         double[][] t2 = {p2};
@@ -284,6 +541,25 @@ public class k_nn_method {
         System.err.println(mc2.toString());*/
  /*Macierz temp =*/ mc2.odejmijMacierz(mc1);
         Macierz temp = new Macierz(mc2.getTablice());
+        temp.pomnoz(inverseCovarianceMatrix);
+        mc2.transponuj();
+        temp.pomnoz(mc2);
+        //System.out.println("Wynik: " + temp.toString());
+        return Math.sqrt(temp.getTablice()[0][0]);
+    }
+
+    //point, data array
+    public double automaticMahalanobisDistance(double[] p1, double[] p2, int inverseMatrixPos) {
+        double[][] t1 = {p1};
+        double[][] t2 = {p2};
+        Macierz mc1 = new Macierz(t1);
+        Macierz mc2 = new Macierz(t2);
+        /*System.err.println(mc1.toString());
+        System.err.println(mc2.toString());*/
+ /*Macierz temp =*/ mc2.odejmijMacierz(mc1);
+        Macierz temp = new Macierz(mc2.getTablice());
+        //temp.pomnoz(inverseCovarianceMatrix);
+        //temp.pomnoz(inversedCovarianceMatrix[inverseMatrixPos]);
         temp.pomnoz(inverseCovarianceMatrix);
         mc2.transponuj();
         temp.pomnoz(mc2);
@@ -331,7 +607,7 @@ public class k_nn_method {
                 //System.out.println("P: " + (1.0/(tab.length - 1)) * convarianceMatrixEngine(tab1[i], tab1[j], average[i], average[j]));
             }
         }
-        System.out.println("---------------------");
+        /*System.out.println("---------------------");
         System.out.println("cov:");
         System.out.print("[");
         for (int i = 0; i < tab[0].length; i++) {
@@ -345,7 +621,7 @@ public class k_nn_method {
             System.out.println(";");
         }
         System.out.print("]");
-        System.out.println("---------------------");
+        System.out.println("---------------------");*/
         return res;
     }
 
