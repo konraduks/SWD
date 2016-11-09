@@ -7,9 +7,11 @@ package Data;
 
 import cern.colt.Arrays;
 import cern.colt.list.MinMaxNumberList;
+import java.lang.reflect.Array;
 import java.util.ArrayList;
 import java.util.Random;
 import java.util.concurrent.ThreadLocalRandom;
+import plot.DrawPlot;
 
 /**
  *
@@ -38,39 +40,70 @@ public class K_Means {
         //ustawienie dla wszystkich punktów najblizszego srodka
         clusterCentreList = new int[data.length];
         k_nn_method knm = new k_nn_method();
-        for (int i = 0; i < clusterCentreList.length; i++) {
-            //pobranie rzedu z data
-            double[] row = data[i];
-            //double[] row = new double[data[i].length];
-            /*for (int j = 0; j < data[i].length; j++) {
+        boolean isChanged = true;
+        int counter = 0;
+        while (isChanged) {
+            counter++;
+            isChanged = false;
+            for (int i = 0; i < clusterCentreList.length; i++) {
+                //pobranie rzedu z data
+                double[] row = data[i];
+                //double[] row = new double[data[i].length];
+                /*for (int j = 0; j < data[i].length; j++) {
                 row[j] = data[i][j];
             }*/
  /*System.err.println("----------------------");
             System.err.println(Arrays.toString(row));
             System.err.println("----------------------");*/
-            //wyliczenie odleglosci od punktu do wszystkich srodkow
-            double distance = 0, tempDistance;
-            int nearestCentre = 0; //pozycja w tabeli cluserCentre najblizszego srodka
-            for (int j = 0; j < clusterCentre.length; j++) {
-                //knm.euclideanDistance(p1, p2);
-                if (j == 0) {
-                    distance = knm.euclideanDistance(row, clusterCentre[j]);
-                    nearestCentre = j;
-                    continue;
+                //wyliczenie odleglosci od punktu do wszystkich srodkow
+                double distance = 0, tempDistance;
+                int nearestCentre = 0; //pozycja w tabeli cluserCentre najblizszego srodka
+                for (int j = 0; j < clusterCentre.length; j++) {
+                    //knm.euclideanDistance(p1, p2);
+                    if (j == 0) {
+                        distance = knm.euclideanDistance(row, clusterCentre[j]);
+                        nearestCentre = j;
+                        continue;
+                    }
+                    if ((tempDistance = knm.euclideanDistance(row, clusterCentre[j])) < distance) {
+                        distance = tempDistance;
+                        nearestCentre = j;
+                    }
                 }
-                if ((tempDistance = knm.euclideanDistance(row, clusterCentre[j])) < distance) {
-                    distance = tempDistance;
-                    nearestCentre = j;
-                }
-            }
-            clusterCentreList[i] = nearestCentre;
-            //System.out.println(nearestCentre);
-        }
-        //zmiana srodkow skupien
-        changeClusterCentre(data);
 
+                //sprawdzenie, czy wartosc w poprzedniej iteracji byla taka sama, jesli nie ustawienie nowej i ustawienie flagi isChanged na true
+                /*if(clusterCentreList[i] == 0){
+                    clusterCentreList[i] = nearestCentre;
+                }
+                else*/ if (clusterCentreList[i] != nearestCentre) {
+                    clusterCentreList[i] = nearestCentre;
+                    isChanged = true;
+                }
+                //System.out.println(nearestCentre);
+            }
+            //zmiana srodkow skupien
+            changeClusterCentre(data);
+        }
+
+        System.out.println("ilosc iteracji: " + counter);
         System.out.println("-----------------------------");
         System.out.println(Arrays.toString(clusterCentreList));
+        
+        String[] temp = new String[clusterCentre.length];
+        for(int i = 0; i < temp.length; i++){
+            temp[i] = "srodek";
+        }
+        double[][] allXY = concatenate(data, clusterCentre);
+        double[] x = new double[allXY.length];
+        double[] y = new double[allXY.length];
+        double[] z = new double[allXY.length];
+        for(int i = 0; i < allXY.length; i++){
+            x[i] = allXY[i][0];
+            y[i] = allXY[i][1];
+            z[i] = allXY[i][2];
+        }
+        //DrawPlot.getInstance().draw2D_desc(x, y, concatenate(decisionClass, temp));//concatenate(data, clusterCentre);
+        DrawPlot.getInstance().draw3D_desc(x, y, z, concatenate(decisionClass, temp));//concatenate(data, clusterCentre);
 
     }
 
@@ -104,26 +137,26 @@ public class K_Means {
         System.err.println("Wielkosc tablicy dzielenia: " + divideVal.length);
         for (int i = 0; i < clusterCentreList.length; i++) {
             //colSum[clusterCentreList[i]] += data[i];
-            for(int j = 0; j < data[i].length; j++){
+            for (int j = 0; j < data[i].length; j++) {
                 colSum[clusterCentreList[i]][j] += data[i][j];
             }
             divideVal[clusterCentreList[i]]++;
         }
         System.out.println("Wartosci divide val: " + Arrays.toString(divideVal));
-        for(double[] col : colSum ){
-                System.out.println(Arrays.toString(col));
-            }
-        for(int i = 0; i < clusterCentre.length; i++){
-            for(int j = 0; j < clusterCentre[j].length; j++){
+        for (double[] col : colSum) {
+            System.out.println(Arrays.toString(col));
+        }
+        for (int i = 0; i < clusterCentre.length; i++) {
+            for (int j = 0; j < clusterCentre[j].length; j++) {
                 //colSum[i][j] = colSum[i][j] / divideVal[i]; 
-                clusterCentre[i][j] = colSum[i][j] / divideVal[i]; 
+                clusterCentre[i][j] = colSum[i][j] / divideVal[i];
             }
         }
-        
+
         /*for(double[] col : colSum ){
                 System.out.println(Arrays.toString(col));
             }*/
-        /*for (double[][] allCol : colSum) {
+ /*for (double[][] allCol : colSum) {
             //System.out.println(Arrays.toString(col));
             System.out.println("--------------------");
             for(double[] col : allCol ){
@@ -187,4 +220,18 @@ public class K_Means {
         }
         return res;
     }*/
+    /**
+     * laczenie dwoch tabel
+     */
+    public <T> T[] concatenate(T[] a, T[] b) {
+        int aLen = a.length;
+        int bLen = b.length;
+
+        @SuppressWarnings("unchecked")
+        T[] c = (T[]) Array.newInstance(a.getClass().getComponentType(), aLen + bLen);
+        System.arraycopy(a, 0, c, 0, aLen);
+        System.arraycopy(b, 0, c, aLen, bLen);
+
+        return c;
+    }
 }
