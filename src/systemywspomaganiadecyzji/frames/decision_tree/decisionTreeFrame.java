@@ -3,9 +3,11 @@
  * To change this template file, choose Tools | Templates
  * and open the template in the editor.
  */
-package systemywspomaganiadecyzji.frames.k_means;
+package systemywspomaganiadecyzji.frames.decision_tree;
 
+import systemywspomaganiadecyzji.frames.k_means.*;
 import Data.Data;
+import Data.DecisionTree;
 import Data.K_Means;
 import Data.ParseDataToMatlab;
 import java.awt.GridLayout;
@@ -21,13 +23,13 @@ import javax.swing.JTextField;
  *
  * @author KonradD
  */
-public class grupowanieKMeans extends javax.swing.JFrame {
+public class decisionTreeFrame extends javax.swing.JFrame {
 
     //private JList columnList;
     JCheckBox[] columns;// = new JComboBox[WIDTH];
     private JPanel columnPanel = new JPanel();
 
-    public grupowanieKMeans() {
+    public decisionTreeFrame() {
         //columnPanel.setLayout(new GridLayout(0, 0, 0, 0));
         columnPanel.setLayout(new GridLayout(0, 1));
         initComponents();
@@ -56,7 +58,7 @@ public class grupowanieKMeans extends javax.swing.JFrame {
 
         setDefaultCloseOperation(javax.swing.WindowConstants.EXIT_ON_CLOSE);
 
-        jButton1.setText("jButton1");
+        jButton1.setText("buduj drzewo");
         jButton1.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
                 jButton1ActionPerformed(evt);
@@ -156,14 +158,16 @@ public class grupowanieKMeans extends javax.swing.JFrame {
             }
         }
         columnSelected = Arrays.copyOf(columnSelected, iterator);   
-        K_Means kms = new K_Means();
-        System.err.println(Arrays.toString(columnSelected));
-        System.err.println("odleglosci: " + jComboBox2.getSelectedIndex());
+        //K_Means kms = new K_Means();
+        //System.err.println(Arrays.toString(columnSelected));
+        //System.err.println("odleglosci: " + jComboBox2.getSelectedIndex());
         //kms.group(Data.getInstance().getData(columnSelected), Integer.parseInt(neighbourCountTextField.getText()));
         //kms.group(Data.getInstance().getData(columnSelected), Data.getInstance().getStringColumn(jComboBox3.getSelectedIndex()), Integer.parseInt(neighbourCountTextField.getText()), jComboBox2.getSelectedIndex());
-        ParseDataToMatlab pdtm = new ParseDataToMatlab();
-        pdtm.parse(Data.getInstance().getData(columnSelected));
+        //ParseDataToMatlab pdtm = new ParseDataToMatlab();
+        //pdtm.parse(Data.getInstance().getData(columnSelected));
         //pdtm.compareData(Data.getInstance().getStringColumn(jComboBox3.getSelectedIndex()));
+        DecisionTree dt = new DecisionTree();
+        dt.generateTree(Data.getInstance().getData(columnSelected), Data.getInstance().getStringColumn(jComboBox3.getSelectedIndex()));
     }//GEN-LAST:event_jButton1ActionPerformed
 
     /**
@@ -183,14 +187,22 @@ public class grupowanieKMeans extends javax.swing.JFrame {
                 }
             }
         } catch (ClassNotFoundException ex) {
-            java.util.logging.Logger.getLogger(grupowanieKMeans.class.getName()).log(java.util.logging.Level.SEVERE, null, ex);
+            java.util.logging.Logger.getLogger(decisionTreeFrame.class.getName()).log(java.util.logging.Level.SEVERE, null, ex);
         } catch (InstantiationException ex) {
-            java.util.logging.Logger.getLogger(grupowanieKMeans.class.getName()).log(java.util.logging.Level.SEVERE, null, ex);
+            java.util.logging.Logger.getLogger(decisionTreeFrame.class.getName()).log(java.util.logging.Level.SEVERE, null, ex);
         } catch (IllegalAccessException ex) {
-            java.util.logging.Logger.getLogger(grupowanieKMeans.class.getName()).log(java.util.logging.Level.SEVERE, null, ex);
+            java.util.logging.Logger.getLogger(decisionTreeFrame.class.getName()).log(java.util.logging.Level.SEVERE, null, ex);
         } catch (javax.swing.UnsupportedLookAndFeelException ex) {
-            java.util.logging.Logger.getLogger(grupowanieKMeans.class.getName()).log(java.util.logging.Level.SEVERE, null, ex);
+            java.util.logging.Logger.getLogger(decisionTreeFrame.class.getName()).log(java.util.logging.Level.SEVERE, null, ex);
         }
+        //</editor-fold>
+        //</editor-fold>
+        //</editor-fold>
+        //</editor-fold>
+        //</editor-fold>
+        //</editor-fold>
+        //</editor-fold>
+        //</editor-fold>
         //</editor-fold>
         //</editor-fold>
         //</editor-fold>
@@ -203,7 +215,7 @@ public class grupowanieKMeans extends javax.swing.JFrame {
         /* Create and display the form */
         java.awt.EventQueue.invokeLater(new Runnable() {
             public void run() {
-                new grupowanieKMeans().setVisible(true);
+                new decisionTreeFrame().setVisible(true);
             }
         });
     }

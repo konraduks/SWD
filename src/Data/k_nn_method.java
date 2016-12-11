@@ -13,6 +13,7 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.Comparator;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Locale;
 
@@ -149,7 +150,7 @@ public class k_nn_method {
         System.out.println(possibleResults.toString());*/
         //System.out.println(possibleResults.get(resultPos));
         return resultPos;
-    }
+    }    
 
     //tryb oceny
     public void evaluationMode(int metric, ArrayList<ArrayList<String>> data, int decisionCol, int neighbourCount) {
@@ -182,7 +183,7 @@ public class k_nn_method {
     ArrayList<Double> qualityClassification = new ArrayList<>();
 
     //automatyczny(od 1 sasiada do n-1) tryb oceny
-    public void automaticEvaluation1(int metric, ArrayList<ArrayList<String>> data, int decisionCol, boolean deleteEqualValCol) {        
+    public void automaticEvaluation1(int metric, ArrayList<ArrayList<String>> data, int decisionCol, boolean deleteEqualValCol) {
         long startTime = System.currentTimeMillis();
         if (deleteEqualValCol) {
             data = deleteEqualCol(data);
@@ -247,6 +248,28 @@ public class k_nn_method {
         System.out.println("Laczny czas wykonania: " + ((stopTime - startTime) / 1000));
     }
 
+    public void doInverseCovarianceMatrix(double[][] data) {
+        //inversedCovarianceMatrix = new Macierz[data.length];
+        inverseArray(covarianceMatrix(data));
+        //for (int x = 0; x < data.length; x++) {
+        //double[][] dataCov = new double[data.size() - 1][data.get(0).size() - 1];
+        //ArrayList<ArrayList<String>> dataToCovArr = classificationSubArray(data, x);//lista bez rzedu do oceny
+        /*for (int i = 4; i < dataCov.length; i++) {
+                    for (int j = 0, y = 0; j < data.get(0).size(); j++) {
+                        if (j == decisionCol) {
+                            continue;
+                        }
+                        //dataCov[i][y++] = Double.parseDouble(data.get(i).get(j).replace(",", "."));
+                        dataCov[i][y++] = Double.parseDouble(dataToCovArr.get(i).get(j).replace(",", "."));
+                    }
+                }*/
+        //long start = System.currentTimeMillis();
+        //inverseArray(covarianceMatrix(data), x);
+        //long stop = System.currentTimeMillis();
+        //System.out.println("Czas odwracania: " + (stop - start));
+        //}
+    }
+
     //automatyczny(od 1 sasiada do n-1) tryb oceny
     public void automaticEvaluation(int metric, ArrayList<ArrayList<String>> data, int decisionCol, boolean deleteEqualValCol) {
         long startTime = System.currentTimeMillis();
@@ -297,10 +320,10 @@ public class k_nn_method {
         ArrayList<Structure> tempRes;
         int calculatedValue;
         for (int i = 0; i < data.size(); i++) {
-            if(metric == 3){
+            if (metric == 3) {
                 double[][] dataCov = new double[data.size() - 1][data.get(0).size() - 1];
                 ArrayList<ArrayList<String>> dataToCovArr = classificationSubArray(data, i);//lista bez rzedu do oceny
-                
+
                 for (int x = 0; x < dataCov.length; x++) {
                     for (int j = 0, y = 0; j < data.get(0).size(); j++) {
                         if (j == decisionCol) {
@@ -310,7 +333,7 @@ public class k_nn_method {
                         dataCov[x][y++] = Double.parseDouble(dataToCovArr.get(x).get(j).replace(",", "."));
                     }
                 }
-                
+
                 //long start = System.currentTimeMillis();
                 inverseArray(covarianceMatrix(dataCov));
                 //long stop = System.currentTimeMillis();
@@ -476,22 +499,19 @@ public class k_nn_method {
     public /*double[][]*/ void inverseArray(double[][] array) {
         //Macierz mac = new Macierz(array);
         //inverseCovarianceMatrix = mac.wyznaczMacierzOdwrotna();
-        
+
         DoubleMatrix2D matrix = new DenseDoubleMatrix2D(array);
         Algebra alg = new Algebra();
         matrix = alg.inverse(matrix);
         Macierz mac = new Macierz(matrix.toArray());
         inverseCovarianceMatrix = mac;
-        
+
         //mac = mac.wyznaczMacierzOdwrotna();        
         /*System.out.println("---------------------");
         System.out.println("macierz odwrotna:");
         System.out.println(mac.toString());
         System.out.println("---------------------");*/
         //return mac.getTablice();
-        
-        
-        
     }
 
     public /*double[][]*/ void inverseArray(double[][] array, int pos) {
