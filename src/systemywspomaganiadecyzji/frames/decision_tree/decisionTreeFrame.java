@@ -167,7 +167,10 @@ public class decisionTreeFrame extends javax.swing.JFrame {
         //pdtm.parse(Data.getInstance().getData(columnSelected));
         //pdtm.compareData(Data.getInstance().getStringColumn(jComboBox3.getSelectedIndex()));
         DecisionTree dt = new DecisionTree();
-        dt.generateTree(Data.getInstance().getData(columnSelected), Data.getInstance().getStringColumn(jComboBox3.getSelectedIndex()));
+        String[] headers = {"LISDLG", "LISSZE", "PLADLG", "PLASZE"};
+        //dt.generateTree(Data.getInstance().getData(columnSelected), Data.getInstance().getStringColumn(jComboBox3.getSelectedIndex()));
+        //dt.leaveOneOutMethod(Data.getInstance().getData(columnSelected), Data.getInstance().getStringColumn(jComboBox3.getSelectedIndex()), Data.getInstance().getHeaders().toArray(new String[Data.getInstance().getHeaders().size()]));
+        dt.leaveOneOutMethod(Data.getInstance().getData(columnSelected), Data.getInstance().getStringColumn(jComboBox3.getSelectedIndex()), headers);
     }//GEN-LAST:event_jButton1ActionPerformed
 
     /**
