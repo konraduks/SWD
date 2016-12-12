@@ -35,7 +35,8 @@ public class TestMain {
         //dt.colNames = colName;
         //dt.entropia(decClass);
         //dt.generateTree(data, decClass);
-        dt.generateRoot(data, decClass, colName);
-        dt.print();
+        //dt.generateRoot(data, decClass, colName);
+        //dt.print();
+        dt.leaveOneOutMethod(data, decClass, colName);
     }
 }

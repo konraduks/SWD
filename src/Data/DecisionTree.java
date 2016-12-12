@@ -26,6 +26,36 @@ public class DecisionTree {
         node.print();
     }
 
+    public void leaveOneOutMethod(String[][] data, String[] decClass, String[] colNames) {
+        String[][] tempData;
+        String[] tempDecClass;
+        String[] rowToEvaluate;
+        String rowTEdecClass = null;
+        for (int i = 0; i < data.length; i++) {
+            tempData = new String[data.length - 1][data[0].length];
+            tempDecClass = new String[decClass.length - 1];
+            rowToEvaluate = new String[data[0].length];
+            //rowTEdecClass = new String[1];
+            for (int j = 0, pos = 0; j < data.length; j++) {
+                if (j == i) {
+                    rowToEvaluate = data[j];
+                    rowTEdecClass = decClass[j];
+                    continue;
+                }
+                tempData[pos] = data[j];
+                tempDecClass[pos++] = decClass[j];
+                //System.out.println(Arrays.toString(data[j]));
+            }
+            /*for (int p = 0; p < tempData.length; p++) {
+                System.out.println(Arrays.toString(tempData[p]));
+            }
+            System.out.println("\n");*/
+            generateRoot(tempData, tempDecClass, colNames);
+            changeEVrow(rowToEvaluate, rowTEdecClass, colNames);
+            //print();
+        }
+    }
+
     public void generateTree(double[][] data, String[] decClass) {
         data = transpose(data);
         //zamiana klasy decyzyjnej na I(P);
@@ -48,7 +78,7 @@ public class DecisionTree {
         int pos = findCol(data, decClass, allEntropia);
         //node = new Node(pos + " ");
         node = new Node(colNames[pos]);
-        System.out.println("Wybor korzenia: " + colNames[pos] + ", wartosc: " + largestDifference);
+//        System.out.println("Wybor korzenia: " + colNames[pos] + ", wartosc: " + largestDifference);
         //wybor mozliwych rozgalezien        
         ArrayList<String> branch = new ArrayList<>();
         for (int i = 0; i < data.length; i++) {
@@ -56,7 +86,7 @@ public class DecisionTree {
                 branch.add(data[i][pos]);
             }
         }
-        System.out.println("Odgalezienia: " + branch.toString());
+//        System.out.println("Odgalezienia: " + branch.toString());
         for (int j = 0; j < branch.size(); j++) {
             /*ArraysPair test1 = cutTable(data, decClass, pos, branch.get(j));           
             String[][] testdata = test1.getData();
@@ -295,6 +325,44 @@ public class DecisionTree {
         System.out.println("I(P): " + (-res));
     }
 
+    private void changeEVrow(String[] rowToEvaluate, String rowTEdecClass, String[] colNames) {
+        //throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+        /*
+        1. pobranie nazwy z node -> czuli korzenia
+        2. znalezienie indeksu wartosc w colnames
+        3. pobranie wartosci z rowtoevaluate
+        4. sprawdzenie ktory to potomek za pomoca node->values i pobranie tego indeksu i przejscie do leafs.get(indeks)
+        4a. powtarzanie krokow 1 - 4
+        5. przechodzenie w dol dopoki name != null
+        6. porownanie endVal z rowTedecClass
+         */
+        Node temp = node;
+        String tempstr = null;
+        int index = 0;
+//        System.out.println(Arrays.toString(rowToEvaluate));
+//        System.out.println(rowTEdecClass.toString());
+//        System.out.println(Arrays.toString(colNames));
+        while (true) {
+            if (temp.getName() == null) { //nie ma nazwy, czyli lisc
+                if (temp.getEndVal().equals(rowTEdecClass)) {
+                    System.out.println("Zaklasyfikowano dobrze");
+                } else {
+                    System.out.println("zle");
+                }
+                return;
+            }
+            index = 0;
+            //System.out.println(temp.getName());
+            while (!temp.getName().equals(colNames[index])) {
+                index++;
+            }
+            tempstr = rowToEvaluate[index];
+            index = temp.getValues().indexOf(tempstr);
+            temp = temp.getLeafs().get(index);
+        }
+
+    }
+
     public double[][] transpose(double[][] array) {
         if (array == null || array.length == 0)//empty or unset array, nothing do to here
         {
@@ -392,20 +460,10 @@ class Node {
         print("", true);
     }
 
-    /*private void print(String prefix, boolean isTail) {
-        System.out.println(prefix + (isTail ? "└── " : "├──  ") + name);        
-        for (int i = 0; i < leafs.size() - 1; i++) {
-            leafs.get(i).print(prefix + (isTail ? "    " : "│   "), false);
-        }
-        if (leafs.size() > 0) {
-            leafs.get(leafs.size() - 1)
-                    .print(prefix + (isTail ?"    " : "│   "), true);
-        }
-    }*/
     private void print(String prefix, boolean isTail) {
         String desc;
         if (name != null) {
-            desc = name;
+            desc = name + " " + values.toString();
         } else {
             desc = endVal;
         }
