@@ -28,6 +28,7 @@ public class SeparowalnoscLiniowa extends javax.swing.JFrame {
     //private JList columnList;
     JCheckBox[] columns;// = new JComboBox[WIDTH];
     private JPanel columnPanel = new JPanel();
+    private boolean isDrawing = false;
 
     public SeparowalnoscLiniowa() {
         //columnPanel.setLayout(new GridLayout(0, 0, 0, 0));
@@ -51,6 +52,7 @@ public class SeparowalnoscLiniowa extends javax.swing.JFrame {
         jLabel1 = new javax.swing.JLabel();
         jLabel4 = new javax.swing.JLabel();
         jComboBox3 = new javax.swing.JComboBox<>();
+        jCheckBox1 = new javax.swing.JCheckBox();
 
         setDefaultCloseOperation(javax.swing.WindowConstants.EXIT_ON_CLOSE);
 
@@ -66,6 +68,13 @@ public class SeparowalnoscLiniowa extends javax.swing.JFrame {
         jLabel4.setText("klasa decyzyjna:");
 
         jComboBox3.setModel(new javax.swing.DefaultComboBoxModel<>(new String[] { "Item 1", "Item 2", "Item 3", "Item 4" }));
+
+        jCheckBox1.setText("wizualizacja danych 2D");
+        jCheckBox1.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                jCheckBox1ActionPerformed(evt);
+            }
+        });
 
         javax.swing.GroupLayout layout = new javax.swing.GroupLayout(getContentPane());
         getContentPane().setLayout(layout);
@@ -84,9 +93,12 @@ public class SeparowalnoscLiniowa extends javax.swing.JFrame {
                     .addGroup(layout.createSequentialGroup()
                         .addComponent(jLabel1)
                         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)))
-                .addComponent(jLabel4)
-                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
-                .addComponent(jComboBox3, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                    .addGroup(layout.createSequentialGroup()
+                        .addComponent(jLabel4)
+                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
+                        .addComponent(jComboBox3, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
+                    .addComponent(jCheckBox1))
                 .addGap(25, 25, 25))
         );
         layout.setVerticalGroup(
@@ -100,7 +112,9 @@ public class SeparowalnoscLiniowa extends javax.swing.JFrame {
                         .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
                             .addComponent(jLabel4)
                             .addComponent(jComboBox3, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
-                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, 189, Short.MAX_VALUE)
+                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
+                        .addComponent(jCheckBox1)
+                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, 159, Short.MAX_VALUE)
                         .addComponent(jButton1))
                     .addComponent(jScrollPane1))
                 .addContainerGap())
@@ -128,8 +142,14 @@ public class SeparowalnoscLiniowa extends javax.swing.JFrame {
         double[] d = ArrayUtils.toPrimitive(ds);*/
         //DrawPlot.getInstance().draw2D_desc_lines(Data.getInstance().getColumn(0), Data.getInstance().getColumn(1), Data.getInstance().getStringColumn(jComboBox3.getSelectedIndex()), sep.getxL(), sep.getyL());
         //DrawPlot.getInstance().draw2D_desc_lines(sep.getxP(), sep.getyP(), Data.getInstance().getStringColumn(jComboBox3.getSelectedIndex()), sep.getxL(), sep.getyL());
-        DrawPlot.getInstance().draw2D_desc_lines(sep.getxP(), sep.getyP(), sep.getDec(), sep.getxL(), sep.getyL());
+        if(isDrawing){
+            DrawPlot.getInstance().draw2D_desc_lines(sep.getxP(), sep.getyP(), sep.getDec(), sep.getxL(), sep.getyL());
+        }        
     }//GEN-LAST:event_jButton1ActionPerformed
+
+    private void jCheckBox1ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jCheckBox1ActionPerformed
+        isDrawing = !isDrawing;
+    }//GEN-LAST:event_jCheckBox1ActionPerformed
 
     /**
      * @param args the command line arguments
@@ -183,6 +203,7 @@ public class SeparowalnoscLiniowa extends javax.swing.JFrame {
 
     // Variables declaration - do not modify//GEN-BEGIN:variables
     private javax.swing.JButton jButton1;
+    private javax.swing.JCheckBox jCheckBox1;
     private javax.swing.JComboBox<String> jComboBox3;
     private javax.swing.JLabel jLabel1;
     private javax.swing.JLabel jLabel4;

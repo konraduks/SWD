@@ -25,6 +25,8 @@ public class Separate {
 
     private String partialRes = ""; //czesciowy wynik, jesli wiemy, ze odcinana czesc ma 0, to reszta musi miec 1 i to tutaj doklejamy
     private List<String> results = new ArrayList<>(); //kolumny z doklejona zmieniona na 0 1 klasa decyzyjna
+    private List<String> deletedPoints = new ArrayList<>(); //punkty usuniete
+    
 
     private double[][] data;
     private String[] decisionClass;
@@ -73,6 +75,8 @@ public class Separate {
         separateFun(/*data, decisionClass*/);
         System.out.println(lines.toString());
         System.out.println(results.toString());
+        System.out.println("Usuniete punkty: " + deletedPoints.size());
+        System.out.println(deletedPoints.toString());
     }
 
     private void separateFun(/*double[][] data, String[] decisionClass*/) {
@@ -369,7 +373,7 @@ public class Separate {
 
         for (int i = 0; i < data.length; i++) {
             if (i == data.length - 1) {
-                //tutaj bedziemy zapisywac do usuwanych
+                deletedPoints.add(java.util.Arrays.toString(data[i]));
             } else {
                 dataTemp[i] = data[i];
                 decTemp[i] = decisionClass[i];
