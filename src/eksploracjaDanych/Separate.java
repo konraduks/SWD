@@ -30,15 +30,14 @@ public class Separate {
     private String[] decisionClass;
 
     private boolean flag = true;
-    
+
     //public double[] xL = {1.9, 1.9, 2, 6};
     //public double[] yL = {0, 3, 2.7, 2.7};
     private List<Double> xL = new ArrayList<>(); //x linii
     private List<Double> yL = new ArrayList<>(); //y linii
     private List<Double> xP = new ArrayList<>(); //x punktow
     private List<Double> yP = new ArrayList<>(); //y punktow
-    
-    
+
     private boolean isNeedDraw;
     private double[][] minMax;
 
@@ -66,7 +65,7 @@ public class Separate {
         this.data = data;
         this.decisionClass = decisionClass;
         isNeedDraw = draw;
-        if(isNeedDraw){
+        if (isNeedDraw) {
             minMax = getMinMax(data);
         }
         System.out.println(Arrays.toString(minMax[0]));
@@ -91,6 +90,13 @@ public class Separate {
 
             System.out.println("Kolumna z najwieksza iloscia do odciecia: " + possibleColumnIndex + " ilosc do odciecia " + possiblePointsToCut + " kierunek: " + possibleCutDirection);
             //tutaj trzeba dodac wyznaczanie linii
+
+            //jesli jest 0 to znaczy, ze jest gdzies XOR, usuwamy jedna krote z danych
+            if (possiblePointsToCut == 0) {
+                System.out.println("Houston we have XOR!");
+                deleteOneRow();
+                continue;
+            }
 
             if (data.length - possiblePointsToCut != 0) {
                 separateLines();
@@ -118,15 +124,15 @@ public class Separate {
             p1 = possibleList.get(pos - 1).getValue();
             p2 = possibleList.get(pos).getValue();
         }
-        if(isNeedDraw){            
-            if(possibleColumnIndex == 0){
+        if (isNeedDraw) {
+            if (possibleColumnIndex == 0) {
                 xL.add((p1 + p2) / 2);
                 xL.add((p1 + p2) / 2);
                 yL.add(minMax[1][0]);
-                yL.add(minMax[1][1]);   
+                yL.add(minMax[1][1]);
                 //yL.add(10.0);
                 //yL.add(-10.0);  
-            } else if(possibleColumnIndex == 1){
+            } else if (possibleColumnIndex == 1) {
                 xL.add(minMax[0][0]);
                 xL.add(minMax[0][1]);
                 //xL.add(10.0);
@@ -171,8 +177,12 @@ public class Separate {
                 decTemp[iterator++] = decisionClass[i];
             } //dodanie wyrzucanych wartosci do results
             else if (data.length - possiblePointsToCut == 0) {
+                xP.add(data[i][0]);
+                yP.add(data[i][1]);
                 results.add(Arrays.toString(data[i]) + " " + partialRes);
             } else {
+                xP.add(data[i][0]);
+                yP.add(data[i][1]);
                 results.add(Arrays.toString(data[i]) + " " + partialRes + possibleCutDirection);
             }
         }
@@ -205,6 +215,25 @@ public class Separate {
         while (index != dataTemp.size() && dataTemp.get(index).getDecision().equals(decision)) {
             index++;
         }
+        //sprawdzenie, czy nie ma XOR
+        int checkPos = index - 1;
+        if (checkPos < dataTemp.size() - 1 && dataTemp.get(checkPos).getValue() == dataTemp.get(checkPos + 1).getValue()) {
+            System.out.println("XOR XOR ALERT!!! CHECKLENGTHSAMEDEC UP");
+            //index = removeXORDown(dataTemp, index);
+            index = removeXORDown(dataTemp, checkPos);
+        }
+        /*try {
+            if (index < dataTemp.size() - 1 && dataTemp.get(index).getValue() == dataTemp.get(index + 1).getValue()) {
+            //removeXOR(index);            
+            System.out.println("XOR XOR ALERT!!! CHECKLENGTHSAMEDEC UP");
+        }
+        } catch (Exception e) {
+            System.err.println("wielkosc index: " + index + " wielkosc datatemp: " + dataTemp.size());
+        }*/
+ /*if(index < dataTemp.size() - 1){
+            if()
+        }*/
+
         up = index;
         //od dolu
         index = dataTemp.size() - 1;
@@ -212,7 +241,22 @@ public class Separate {
         while (index != 0 && dataTemp.get(index).getDecision().equals(decision)) {
             index--;
         }
+        /*if (index != 0 && dataTemp.get(index).getValue() == dataTemp.get(index - 1).getValue()) {
+            //removeXOR(index);
+            System.out.println("XOR XOR ALERT!!! CHECKLENGTHSAMEDEC DOWN");
+        }*/
+        //checkPos = dataTemp.size() - 1 - index;
+        for (Data dT : dataTemp) {
+            System.out.println(dT.getDecision());
+        }
+        System.out.println("Index dolny: " + index);
+        if (index != 0 && dataTemp.get(index).getValue() == dataTemp.get(index + 1).getValue()) {
+            //removeXOR(index);
+            index = removeXORUp(dataTemp, index);
+            System.out.println("XOR XOR ALERT!!! CHECKLENGTHSAMEDEC DOWN");
+        }
         down = dataTemp.size() - 1 - index;
+
         //System.out.println("Od gory: " + up + " od dolu: " + down);
         if (down > possiblePointsToCut || up > possiblePointsToCut) {
             possibleList = dataTemp;
@@ -226,18 +270,18 @@ public class Separate {
             }
         }
     }
-    
+
     /*
     znalezienie wartosci minimalnej i maksymalnej dla kazdej kolumny, aby mozna bylo wyznaczyc granice linii
      */
-    public double[][] getMinMax(double[][] data) {        
-        double[][] res = new double[2][2];       
+    public double[][] getMinMax(double[][] data) {
+        double[][] res = new double[2][2];
         for (int i = 0; i < data[i].length; i++) {
             res[i][0] = data[0][i];
             res[i][1] = data[0][i];
             //System.out.println(data[i][0]);
             //System.out.println(data[i][1]);
-            for(int y = 0; y < data.length; y++){
+            for (int y = 0; y < data.length; y++) {
                 /* if (data[y][i] < res[0][i]) {
                     res[0][i] = data[y][i];
                 } else if (data[y][i] > res[1][i]) {
@@ -255,21 +299,85 @@ public class Separate {
         System.out.println(Arrays.toString(res));
         return res;
     }
-    
-    public double[] getxL(){
+
+    public double[] getxL() {
         double[] temp = new double[xL.size()];
-        for(int i = 0; i < temp.length; i++){
+        for (int i = 0; i < temp.length; i++) {
             temp[i] = xL.get(i);
         }
         return temp;
     }
-    
-    public double[] getyL(){
+
+    public double[] getyL() {
         double[] temp = new double[yL.size()];
-        for(int i = 0; i < temp.length; i++){
+        for (int i = 0; i < temp.length; i++) {
             temp[i] = yL.get(i);
         }
         return temp;
+    }
+
+    public double[] getxP() {
+        double[] temp = new double[xP.size()];
+        for (int i = 0; i < temp.length; i++) {
+            temp[i] = xP.get(i);
+        }
+        return temp;
+    }
+
+    public double[] getyP() {
+        double[] temp = new double[yP.size()];
+        for (int i = 0; i < temp.length; i++) {
+            temp[i] = yP.get(i);
+        }
+        return temp;
+    }
+
+    public String[] getDec() {
+        String[] temp = new String[yP.size()];
+        for (int i = 0; i < temp.length; i++) {
+            temp[i] = "point";
+        }
+        return temp;
+    }
+
+    private int removeXORDown(List<Data> dataTemp, int index) {
+        int temp = index;
+        while (temp != 0) {
+            temp--;
+            if (dataTemp.get(temp).getValue() == dataTemp.get(index + 1).getValue()) {
+                return temp;
+            }
+        }
+        return 0;
+    }
+
+    private int removeXORUp(List<Data> dataTemp, int index) {
+        int temp = index;
+        while (temp != dataTemp.size() - 1) {
+            temp++;
+            if (dataTemp.get(temp).getValue() == dataTemp.get(index + 1).getValue()) {
+                return temp;
+            }
+        }
+        return dataTemp.size() - 1;
+    }
+
+    private void deleteOneRow() {
+        double[][] dataTemp = new double[data.length - 1][data[0].length];
+        //System.out.println(dataTemp.length + " " + dataTemp[0].length);
+        String[] decTemp = new String[decisionClass.length - 1];
+
+        for (int i = 0; i < data.length; i++) {
+            if (i == data.length - 1) {
+                //tutaj bedziemy zapisywac do usuwanych
+            } else {
+                dataTemp[i] = data[i];
+                decTemp[i] = decisionClass[i];
+            }
+        }
+
+        data = dataTemp;
+        decisionClass = decTemp;
     }
 
     class Data implements Comparable<Data> {

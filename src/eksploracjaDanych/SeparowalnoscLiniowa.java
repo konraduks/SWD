@@ -126,7 +126,9 @@ public class SeparowalnoscLiniowa extends javax.swing.JFrame {
         /*Double[] dx = sep.xL.toArray(new Double[sep.xL.size()]);
         Double[] dy = sep.yL.toArray(new Double[sep.xL.size()]);
         double[] d = ArrayUtils.toPrimitive(ds);*/
-        DrawPlot.getInstance().draw2D_desc_lines(Data.getInstance().getColumn(0), Data.getInstance().getColumn(1), Data.getInstance().getStringColumn(jComboBox3.getSelectedIndex()), sep.getxL(), sep.getyL());
+        //DrawPlot.getInstance().draw2D_desc_lines(Data.getInstance().getColumn(0), Data.getInstance().getColumn(1), Data.getInstance().getStringColumn(jComboBox3.getSelectedIndex()), sep.getxL(), sep.getyL());
+        //DrawPlot.getInstance().draw2D_desc_lines(sep.getxP(), sep.getyP(), Data.getInstance().getStringColumn(jComboBox3.getSelectedIndex()), sep.getxL(), sep.getyL());
+        DrawPlot.getInstance().draw2D_desc_lines(sep.getxP(), sep.getyP(), sep.getDec(), sep.getxL(), sep.getyL());
     }//GEN-LAST:event_jButton1ActionPerformed
 
     /**
