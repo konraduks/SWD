@@ -82,7 +82,17 @@ public class DecisionTree {
             System.out.println("},");
         }
         System.out.println("};");*/
-        System.out.print("{");
+        System.out.println("[");
+        for (int i = 0; i < data.length; i++) {
+            //System.out.print("{");
+            for (int j = 0; j < data[i].length; j++) {
+                System.out.print(data[i][j] + " ");
+            }
+            System.out.println(";");
+        }
+        System.out.println("]");
+        System.out.println("\n");
+        /*System.out.print("{");
         for (int i = 0; i < decClass.length; i++) {
             if (i != decClass.length - 1) {
                     System.out.print(" \"" + decClass[i] + "\",");
@@ -90,7 +100,16 @@ public class DecisionTree {
                     System.out.print(" \"" + decClass[i] + "\"");
                 }
         }
-        System.out.println("};");
+        System.out.println("};");*/
+        System.out.print("{");
+        for (int i = 0; i < decClass.length; i++) {
+            if (i != decClass.length - 1) {
+                    System.out.print(" \'" + decClass[i] + "\',");
+                }else{
+                    System.out.print(" \'" + decClass[i] + "\'");
+                }
+        }
+        System.out.println("}");
         double[][] tempData;
         String[] tempDecClass;
         double[] rowToEvaluate;
@@ -235,7 +254,7 @@ public class DecisionTree {
     public void generateLeaves(String[][] data, String[] decClass, String[] colNames, Node parent, Node thisChild) {
         double entropia = entropia(decClass);
         //jesli entropia = 0, to koniec algorytmu dla tej sciezki
-        if (entropia == 0) {
+        if (entropia == 0 || colNames.length == 0) {
             //System.out.println("Koniec dla potomka: " + parent.getName() + ", czyli: " + thisChild.getName());
             //System.out.println("Koniec dla potomka: " + parent.getName() + ", czyli: " + child.getName());
             //thisChild.setName(null);
@@ -245,7 +264,12 @@ public class DecisionTree {
         }
         int pos = findCol(data, decClass, entropia);
         //System.out.println("Wybor liscia: " + colNames[pos] + ", wartosc: " + largestDifference);
-        thisChild.setName(colNames[pos]);
+        try {
+            thisChild.setName(colNames[pos]);
+        } catch (Exception e) {
+            System.err.println("blad");
+        }
+        
         ArrayList<String> branch = new ArrayList<>();
         for (int i = 0; i < data.length; i++) {
             if (!branch.contains(data[i][pos])) {
@@ -273,7 +297,11 @@ public class DecisionTree {
             //System.out.println("Koniec dla potomka: " + parent.getName() + ", czyli: " + thisChild.getName());
             //System.out.println("Koniec dla potomka: " + parent.getName() + ", czyli: " + child.getName());
             //thisChild.setName(null);
-            thisChild.setEndVal(decClass[0]);
+            if(entropia != 0){
+                thisChild.setEndVal(mostAppear(decClass));
+            }else{
+                thisChild.setEndVal(decClass[0]);
+            }            
             //ustawienie odpowiednich wartosci w drzewie
             return;
         }
@@ -632,7 +660,14 @@ public class DecisionTree {
             }
             tempstr = rowToEvaluate[index];
             index = temp.getValues().indexOf(tempstr);
-            temp = temp.getLeafs().get(index);
+            try {
+                temp = temp.getLeafs().get(index);
+            } catch (Exception e) {
+                //System.err.println("");
+                return false;
+                //return true;
+            }
+            
         }
     }
 
@@ -670,6 +705,30 @@ public class DecisionTree {
             }
         }
         return array_new;
+    }
+
+    private String mostAppear(String[] decClass) {
+        String res;
+        ArrayList<String> poss = new ArrayList<>();
+        ArrayList<Integer> value = new ArrayList<>();
+        for (String str : decClass) {
+            if (!poss.contains(str)) {
+                poss.add(str);
+                value.add(1);
+            } else {
+                value.set(poss.indexOf(str), value.get(poss.indexOf(str)) + 1);
+            }
+        }
+        int theBiggestVal = 0;
+        int pos = 0;
+        for(int i = 0; i < value.size(); i++){
+            if(value.get(i) > theBiggestVal){
+                theBiggestVal = value.get(i);
+                pos = i;
+            }
+        }
+        res = poss.get(pos);
+        return res;
     }
 }
 

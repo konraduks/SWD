@@ -7,10 +7,13 @@ package systemywspomaganiadecyzji.frames;
 
 import Data.Data;
 import Data.DataOperation;
+import java.awt.GridLayout;
 import java.awt.Window;
 import java.util.ArrayList;
 import java.util.logging.Logger;
+import javax.swing.JCheckBox;
 import javax.swing.JFrame;
+import javax.swing.JPanel;
 
 /**
  *
@@ -24,14 +27,18 @@ public class Dyskretyzacja extends javax.swing.JFrame {
     boolean changeValueInExistingColumn = false;
     private Window mainFrame;
 
+    JCheckBox[] columns;
+    private JPanel columnPanel = new JPanel();
+
     public Dyskretyzacja() {
         initComponents();
         setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
         fillComboBox();
     }
-    
+
     public Dyskretyzacja(Window frame) {
         mainFrame = frame;
+        columnPanel.setLayout(new GridLayout(0, 1));
         initComponents();
         setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
         fillComboBox();
@@ -50,17 +57,15 @@ public class Dyskretyzacja extends javax.swing.JFrame {
         buttonGroup2 = new javax.swing.ButtonGroup();
         buttonGroup3 = new javax.swing.ButtonGroup();
         jLabel1 = new javax.swing.JLabel();
-        jComboBox1 = new javax.swing.JComboBox<>();
         jLabel2 = new javax.swing.JLabel();
         jTextField2 = new javax.swing.JTextField();
         jCheckBox2 = new javax.swing.JCheckBox();
         jButton1 = new javax.swing.JButton();
+        jScrollPane1 = new javax.swing.JScrollPane(columnPanel);
 
         setDefaultCloseOperation(javax.swing.WindowConstants.EXIT_ON_CLOSE);
 
         jLabel1.setText("wybierz kolumnę:");
-
-        jComboBox1.setModel(new javax.swing.DefaultComboBoxModel<>(new String[] { "Item 1", "Item 2", "Item 3", "Item 4" }));
 
         jLabel2.setText("podaj liczbę przedziałów:");
 
@@ -82,39 +87,43 @@ public class Dyskretyzacja extends javax.swing.JFrame {
         getContentPane().setLayout(layout);
         layout.setHorizontalGroup(
             layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGroup(layout.createSequentialGroup()
-                .addContainerGap()
-                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                    .addGroup(layout.createSequentialGroup()
-                        .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                            .addComponent(jLabel1)
-                            .addComponent(jLabel2))
-                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                        .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING, false)
-                            .addComponent(jComboBox1, 0, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                            .addComponent(jTextField2)))
-                    .addComponent(jCheckBox2))
-                .addContainerGap(183, Short.MAX_VALUE))
             .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, layout.createSequentialGroup()
-                .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                .addComponent(jButton1)
+                .addContainerGap()
+                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING)
+                    .addGroup(javax.swing.GroupLayout.Alignment.LEADING, layout.createSequentialGroup()
+                        .addComponent(jLabel1)
+                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                        .addComponent(jLabel2)
+                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                        .addComponent(jTextField2, javax.swing.GroupLayout.PREFERRED_SIZE, 56, javax.swing.GroupLayout.PREFERRED_SIZE)
+                        .addGap(6, 6, 6))
+                    .addGroup(layout.createSequentialGroup()
+                        .addComponent(jScrollPane1, javax.swing.GroupLayout.PREFERRED_SIZE, 166, javax.swing.GroupLayout.PREFERRED_SIZE)
+                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, 7, Short.MAX_VALUE)
+                        .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING)
+                            .addComponent(jCheckBox2)
+                            .addComponent(jButton1))))
                 .addContainerGap())
         );
         layout.setVerticalGroup(
             layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGroup(layout.createSequentialGroup()
-                .addContainerGap()
-                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
-                    .addComponent(jLabel1)
-                    .addComponent(jComboBox1, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
-                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
-                    .addComponent(jLabel2)
-                    .addComponent(jTextField2, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
-                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                .addComponent(jCheckBox2)
-                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, 184, Short.MAX_VALUE)
-                .addComponent(jButton1)
+                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                    .addGroup(layout.createSequentialGroup()
+                        .addGap(17, 17, 17)
+                        .addComponent(jLabel1))
+                    .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, layout.createSequentialGroup()
+                        .addContainerGap()
+                        .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+                            .addComponent(jLabel2)
+                            .addComponent(jTextField2, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))))
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
+                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                    .addGroup(layout.createSequentialGroup()
+                        .addComponent(jCheckBox2)
+                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, 201, Short.MAX_VALUE)
+                        .addComponent(jButton1))
+                    .addComponent(jScrollPane1))
                 .addContainerGap())
         );
 
@@ -137,7 +146,7 @@ public class Dyskretyzacja extends javax.swing.JFrame {
             e.printStackTrace();
             return;
         }
-        String[] res = dop.dyskretyzacja(Data.getInstance().getColumn(jComboBox1.getSelectedIndex()), numberofRange);
+        /*String[] res = dop.dyskretyzacja(Data.getInstance().getColumn(jComboBox1.getSelectedIndex()), numberofRange);
         if (changeValueInExistingColumn) {
             Data.getInstance().setColumn(res, jComboBox1.getSelectedIndex());            
         } else {
@@ -149,6 +158,23 @@ public class Dyskretyzacja extends javax.swing.JFrame {
                 Data.getInstance().addHeader(Data.getInstance().getHeader(jComboBox1.getSelectedIndex()) + " dyskretyzacja");
             }
             Data.getInstance().addColumn(res);
+        }*/
+        for (int i = 0; i < columns.length; i++) {
+            if (columns[i].isSelected()) {
+                String[] res = dop.dyskretyzacja(Data.getInstance().getColumn(i), numberofRange);
+                if (changeValueInExistingColumn) {
+                    Data.getInstance().setColumn(res, i);
+                } else {
+                    if (Data.getInstance().getHeaders().isEmpty()) {
+                        for (int j = 1; j <= Data.getInstance().getMaxWidth(); j++) {
+                            Data.getInstance().addHeader(j + "");
+                        }
+                    } else {
+                        Data.getInstance().addHeader(Data.getInstance().getHeader(i) + " dyskretyzacja");
+                    }
+                    Data.getInstance().addColumn(res);
+                }
+            }
         }
         mainFrame.dispose();
         this.dispose();
@@ -192,18 +218,29 @@ public class Dyskretyzacja extends javax.swing.JFrame {
 
     private void fillComboBox() {
         ArrayList<String> headers = Data.getInstance().getHeaders();
-        jComboBox1.removeAllItems();
+        //jComboBox1.removeAllItems();
         if (headers.isEmpty()) {
             //System.out.println("PUSTO");
             int lp = Data.getInstance().getMaxWidth();
+            columns = new JCheckBox[lp];
             for (int i = 1; i <= lp; i++) {
-                jComboBox1.addItem(i + " ");
+                //jComboBox1.addItem(i + " ");
+                columns[i] = new JCheckBox((i + 1) + " ");
+                columns[i].setSelected(true);
+                columnPanel.add(columns[i]);
             }
         } else {
-            for (String s : headers) {
-                jComboBox1.addItem(s);
+            //for (String s : headers) {
+            columns = new JCheckBox[headers.size()];
+            for (int i = 0; i < headers.size(); i++) {
+                //jComboBox1.addItem(headers.get(i));
+                columns[i] = new JCheckBox(headers.get(i));
+                columns[i].setSelected(true);
+                columnPanel.add(columns[i]);
             }
         }
+        columnPanel.revalidate();
+        columnPanel.repaint();
     }
 
     // Variables declaration - do not modify//GEN-BEGIN:variables
@@ -212,9 +249,9 @@ public class Dyskretyzacja extends javax.swing.JFrame {
     private javax.swing.ButtonGroup buttonGroup3;
     private javax.swing.JButton jButton1;
     private javax.swing.JCheckBox jCheckBox2;
-    private javax.swing.JComboBox<String> jComboBox1;
     private javax.swing.JLabel jLabel1;
     private javax.swing.JLabel jLabel2;
+    private javax.swing.JScrollPane jScrollPane1;
     private javax.swing.JTextField jTextField2;
     // End of variables declaration//GEN-END:variables
 }

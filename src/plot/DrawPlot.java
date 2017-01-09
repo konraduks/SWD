@@ -86,6 +86,22 @@ public class DrawPlot {
             }
         }
     }
+    
+    public void draw2D_desc_lines(double[] x, double[] y, String[] desc, double[] xL, double[] yL) {
+        try {
+            thePlot = new plot();
+            thePlot.plot2D_desc_lines(x, y, desc, xL, yL);//(x, y, desc);
+            thePlot.waitForFigures();
+
+        } catch (Exception ex) {
+            Logger.getLogger(DrawPlot.class.getName()).log(Level.SEVERE, null, ex);
+            //System.out.println("Exception: " + ex.toString());
+        } finally {
+            if (thePlot != null) {
+                thePlot.dispose();
+            }
+        }
+    }
 
     public static void main(String[] args) {
         //new DrawPlot().draw3D();
