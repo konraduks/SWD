@@ -82,6 +82,7 @@ public class Separate {
     private void separateFun(/*double[][] data, String[] decisionClass*/) {
         while (flag) {
             possiblePointsToCut = 0;
+            System.out.println("-------------------------------------");
             for (int i = 0; i < data[0].length; i++) {
                 List<Data> dataTemp = new ArrayList<>();
                 for (int y = 0; y < data.length; y++) {
@@ -239,6 +240,7 @@ public class Separate {
         }*/
 
         up = index;
+        System.out.println("Index od gory: " + up);
         //od dolu
         index = dataTemp.size() - 1;
         decision = dataTemp.get(index).getDecision();
@@ -253,14 +255,14 @@ public class Separate {
         for (Data dT : dataTemp) {
             System.out.println(dT.getDecision());
         }
-        System.out.println("Index dolny: " + index);
+        //System.out.println("Index dolny: " + index);
         if (index != 0 && dataTemp.get(index).getValue() == dataTemp.get(index + 1).getValue()) {
             //removeXOR(index);
             index = removeXORUp(dataTemp, index);
             System.out.println("XOR XOR ALERT!!! CHECKLENGTHSAMEDEC DOWN");
         }
-        down = dataTemp.size() - 1 - index;
-
+        down = dataTemp.size() - 1 - index - 1;
+        System.out.println("Index dolny: " + index + " oraz " + down);
         //System.out.println("Od gory: " + up + " od dolu: " + down);
         if (down > possiblePointsToCut || up > possiblePointsToCut) {
             possibleList = dataTemp;

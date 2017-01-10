@@ -187,7 +187,7 @@ public class P2D extends javax.swing.JFrame {
         jComboBox2.removeAllItems();
         jComboBox3.removeAllItems();
         if(headers.isEmpty()){
-            System.out.println("PUSTO");
+            System.out.println("PUSTO Brak naglowkow");
             int lp = Data.getInstance().getMaxWidth();
             for(int i = 1; i <= lp; i++){
                 jComboBox1.addItem(i + " ");
